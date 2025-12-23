@@ -1,4 +1,4 @@
-# interfaz_programa.py — v38.1 (FIX: Error 'COLORS not defined' solucionado)
+# interfaz_programa.py — v45.0 (CAMPO REUNIÓN AGREGADO + ACENTOS + CUADRO AMARILLO FIXED)
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, simpledialog, Menu
 import pandas as pd
@@ -47,18 +47,29 @@ indice_edicion = None
 DATOS_WORD_CACHED = []
 
 # Variables GUI
-entry_fecha = None; entry_nro_carrera = None; entry_horario = None; entry_premio = None
+entry_fecha = None; entry_nro_reunion = None; entry_nro_carrera = None; entry_horario = None; entry_premio = None
 entry_distancia = None; entry_condicion = None; entry_premios_dinero = None; entry_apuesta = None
 entry_incremento = None; entry_incremento_2 = None; combo_word = None; combo_dist = None
 text_caballos = None; text_actuaciones = None; tabla_programa = None; lista_carreras = None
 contador_carreras = None; btn_accion = None
 
+# --- COLORES OFICIALES MANDILES (RIGUROSO) ---
 MANDILES = {
-    "1": ("#DA291C", "#FFFFFF"), "2": ("#FFFFFF", "#000000"), "3": ("#004B87", "#FFFFFF"),
-    "4": ("#FFD700", "#000000"), "5": ("#008000", "#FFFFFF"), "6": ("#000000", "#FFD700"),
-    "7": ("#FF8C00", "#000000"), "8": ("#FF69B4", "#000000"), "9": ("#00BFFF", "#000000"),
-    "10": ("#800080", "#FFFFFF"), "11": ("#A9A9A9", "#DA291C"), "12": ("#32CD32", "#000000"),
-    "13": ("#8B4513", "#FFFFFF"), "14": ("#800000", "#FFFF00"), "15": ("#F5DEB3", "#000000"),
+    "1": ("#d32f2f", "#ffffff"),   # Rojo / Blanco
+    "2": ("#ffffff", "#000000"),   # Blanco / Negro
+    "3": ("#1565c0", "#ffffff"),   # Azul / Blanco
+    "4": ("#fdd835", "#000000"),   # Amarillo / Negro
+    "5": ("#2e7d32", "#ffffff"),   # Verde / Blanco
+    "6": ("#000000", "#fff200"),   # Negro / Amarillo
+    "7": ("#ef6c00", "#000000"),   # Naranja / Negro
+    "8": ("#f48fb1", "#000000"),   # Rosa / Negro
+    "9": ("#00bcd4", "#000000"),   # Celeste / Negro
+    "10": ("#7b1fa2", "#ffffff"),  # Violeta / Blanco
+    "11": ("#9e9e9e", "#da2128"),  # Gris / Rojo
+    "12": ("#71bf44", "#000000"),  # Verde Claro / Negro
+    "13": ("#a05b09", "#fff200"),  # Marron / Amarillo
+    "14": ("#b71c1c", "#ffffff"),  # Granate / Blanco
+    "15": ("#f3d19c", "#000000"),  # Beige / Negro
     "default": ("#CCCCCC", "#000000")
 }
 
@@ -77,15 +88,7 @@ RECORDS = {
     "2200": '2.200 metros - Record Dist.: 2\'17"1/5, Frances Net 24/09/2016',
 }
 
-# --- AQUÍ ESTABA EL ERROR: FALTABA ESTA VARIABLE ---
-COLORS = {
-    "bg": "#f0f2f5", 
-    "primary": "#248689", 
-    "accent": "#f16536", 
-    "card": "#ffffff", 
-    "ink": "#1f2937", 
-    "line": "#e5e7eb"
-}
+COLORS = {"bg": "#f0f2f5", "primary": "#248689", "accent": "#f16536", "card": "#ffffff", "ink": "#1f2937", "line": "#e5e7eb"}
 
 # =============================================================================
 #  SECCIÓN 2: LÓGICA
@@ -152,7 +155,7 @@ def cargar_word_entrada():
     except: messagebox.showerror("Error", "No se pudo leer el archivo."); return
     
     global DATOS_WORD_CACHED; DATOS_WORD_CACHED = []; curr = {}; capturing = False
-    KEYWORDS = ("TURNO", "CLASICO", "CLÁSICO", "ESPECIAL", "HANDICAP", "PREMIO", "GRAN PREMIO")
+    KEYWORDS = ("TURNO", "CLASICO", "CLÁSICO", "ESPECIAL", "HANDICAP", "GRAN PREMIO")
     
     for para in doc.paragraphs:
         txt = para.text.strip(); 
@@ -188,7 +191,6 @@ def cargar_word_entrada():
                 if curr["condicion_raw"]: curr["condicion_raw"] += " " + txt
                 else: curr["condicion_raw"] = txt
     if curr: DATOS_WORD_CACHED.append(curr)
-    
     vals = [c.get("nombre", "Carrera") for c in DATOS_WORD_CACHED]; combo_word['values'] = vals
     if vals: combo_word.current(0); messagebox.showinfo("Cargado", f"{len(vals)} carreras detectadas."); aplicar_seleccion_word(None)
     else: messagebox.showwarning("Atención", "No se detectaron carreras.")
@@ -234,41 +236,33 @@ def exportar_pdf(color_mode="digital"):
         
         c = canvas.Canvas(filepath, pagesize=A4)
         W, H = A4; MX = 0.5 * cm; MY = 1.0 * cm
-        
         styles = getSampleStyleSheet()
         style_cell_center = ParagraphStyle('CellC', parent=styles['Normal'], fontName='Helvetica', fontSize=6.5, leading=7, alignment=TA_CENTER)
         style_cell_left = ParagraphStyle('CellL', parent=styles['Normal'], fontName='Helvetica', fontSize=6.5, leading=7, alignment=TA_LEFT)
         style_legales = ParagraphStyle('Leg', parent=styles['Normal'], fontName='Helvetica', fontSize=7, leading=8, alignment=TA_JUSTIFY)
         style_cond = ParagraphStyle('Cond', parent=styles['Normal'], fontName='Helvetica', fontSize=8, leading=9)
+        LOGO_MAIN = ASSETS_DIR / "logo.png"; LOGO_WSP = ASSETS_DIR / "whatsapp.png"; LOGO_SOC = ASSETS_DIR / "redes.png"
         
-        LOGO_MAIN = ASSETS_DIR / "logo.png"
-        LOGO_WSP  = ASSETS_DIR / "whatsapp.png"
-        LOGO_SOC  = ASSETS_DIR / "redes.png"
-
         fecha_txt = entry_fecha.get().strip().upper()
-        if not fecha_txt:
-            fecha_txt = date.today().strftime("%d DE %B DE %Y").upper()
+        if not fecha_txt: fecha_txt = date.today().strftime("%d DE %B DE %Y").upper()
 
         def draw_header_p1():
-            y_top_box = H - 1.0*cm; h_top_box = 1.8*cm; w_box = W - 2*MX
-            
+            y_top_box = H - 1.0*cm; h_top_box = 1.6*cm; w_box = W - 2*MX
             c.setStrokeColor(C_VERDE); c.setLineWidth(2); c.rect(MX, y_top_box - h_top_box, w_box, h_top_box)
-            if LOGO_MAIN.exists(): 
-                c.drawImage(str(LOGO_MAIN), MX + 0.3*cm, y_top_box - h_top_box + 0.1*cm, width=1.6*cm, height=1.6*cm, mask='auto', preserveAspectRatio=True)
+            if LOGO_MAIN.exists(): c.drawImage(str(LOGO_MAIN), MX + 0.3*cm, y_top_box - h_top_box + 0.1*cm, width=1.4*cm, height=1.4*cm, mask='auto', preserveAspectRatio=True)
+            c.setFillColor(colors.black); c.setFont("Helvetica-BoldOblique", 16)
+            c.drawCentredString(MX + w_box/2 + 1.0*cm, y_top_box - 0.7*cm, "HIPÓDROMO DE TUCUMÁN - PROGRAMA OFICIAL")
             
-            c.setFillColor(colors.black)
-            c.setFont("Helvetica-BoldOblique", 16)
-            c.drawCentredString(MX + w_box/2 + 1.0*cm, y_top_box - 0.7*cm, "HIPODROMO DE TUCUMAN - PROGRAMA OFICIAL")
+            # REUNION USANDO CAMPO NUEVO
+            nro_reunion = entry_nro_reunion.get().strip() or "22"
+            c.setFillColor(colors.darkgrey); c.setFont("Helvetica-Bold", 12)
+            c.drawCentredString(MX + w_box/2 + 1.0*cm, y_top_box - 1.3*cm, f"REUNION Nº {nro_reunion} - {fecha_txt}")
             
-            c.setFillColor(colors.dimgray)
-            c.setFont("Helvetica-Bold", 10)
-            c.drawCentredString(MX + w_box/2 + 1.0*cm, y_top_box - 1.2*cm, f"REUNION Nº {entry_nro_carrera.get() if entry_nro_carrera.get() else '22'} - {fecha_txt}")
-
             c.setFillColor(colors.black)
             y_auth = y_top_box - h_top_box - 0.2*cm
             data_auth = [["PRESIDENTE:", "Dr. Luis Alberto Gamboa", "VOCALES", "DELEGADO HIPODROMO"], ["VICE-PRESIDENTE:", "C.P.N Ernesto José Vidal Sanz", "Juan Ramon Rouges", "Estanislao Perez Garcia"], ["SECRETARIO:", "Ignacio Lopez Bustos", "Marcos Bruchmann", ""], ["", "", "Santiago Allende", ""]]
             t = Table(data_auth, colWidths=[3.2*cm, 6*cm, 4.5*cm, 6.3*cm])
-            t.setStyle(TableStyle([('FONTNAME', (0,0), (-1,-1), 'Helvetica'), ('FONTSIZE', (0,0), (-1,-1), 7), ('FONTNAME', (0,0), (0,-1), 'Helvetica-Bold'), ('FONTNAME', (2,0), (3,0), 'Helvetica-Bold'), ('SPAN', (2,0), (2,0)), ('BOX', (0,0), (-1,-1), 2, C_VERDE)]))
+            t.setStyle(TableStyle([('FONTNAME', (0,0), (-1,-1), 'Helvetica'), ('FONTSIZE', (0,0), (-1,-1), 6.5), ('FONTNAME', (0,0), (0,-1), 'Helvetica-Bold'), ('FONTNAME', (2,0), (3,0), 'Helvetica-Bold'), ('SPAN', (2,0), (2,0)), ('BOX', (0,0), (-1,-1), 2, C_VERDE), ('TOPPADDING', (0,0), (-1,-1), 1.5), ('BOTTOMPADDING', (0,0), (-1,-1), 0)]))
             w_t, h_t = t.wrapOn(c, W, H); t.drawOn(c, MX, y_auth - h_t)
             
             txt_legal = "Admisión y permanencia: Las autoridades del Hipódromo de Tucumán ejercen la facultad de admisión y permanencia en las instalaciones del Hipódromo durante el desarrollo de la reunión hípica. Los profesionales y el público asistente se someten a las disposiciones del Reglamento General de Carreras y a las resoluciones de la Honorable Comisión de Carreras, cuyos fallos son inapelables. Los Boletos no cobrados solo se pagarán, los días de carreras de Tucumán y en el horario en que se desarrolle la reunión y tendrán validez, hasta 2 reuniones siguientes."
@@ -287,63 +281,84 @@ def exportar_pdf(color_mode="digital"):
             c.setFillColor(C_HEAD_BG); c.setStrokeColor(colors.black); c.setLineWidth(1)
             c.rect(x, y_start - h_head, width, h_head, fill=(color_mode=="digital"))
             c.setFillColor(C_HEAD_TXT); c.setFont("Helvetica-Bold", 14)
-            c.drawString(x + 2*mm, y_start - 8*mm, f"{cab['nro_carrera']}º Carrera")
-            clean_premio = _clean_str(cab['premio']); c.setFont("Helvetica-Bold", 15)
-            c.drawCentredString(x + width/2, y_start - 8*mm, f"PREMIO \"{clean_premio.upper()}\"")
-            clean_horario = _clean_str(cab['horario']).replace("Hs.", ""); c.setFont("Helvetica-Bold", 14); c.drawRightString(x + width - 2*mm, y_start - 8*mm, f"{clean_horario} Hs.")
+            c.drawString(x + 2*mm, y_start - 7.0*mm, f"{cab['nro_carrera']}º Carrera")
+            
+            clean_premio = _clean_str(cab['premio'])
+            if clean_premio.upper().startswith("PREMIO"): clean_premio = clean_premio[6:].strip()
+            
+            c.setFont("Helvetica-Bold", 15)
+            c.drawCentredString(x + width/2, y_start - 7.0*mm, f"PREMIO \"{clean_premio.upper()}\"")
+            clean_horario = _clean_str(cab['horario']).replace("Hs.", ""); c.setFont("Helvetica-Bold", 14); c.drawRightString(x + width - 2*mm, y_start - 7.0*mm, f"{clean_horario} Hs.")
             c.setFont("Helvetica-Bold", 8); full_dist = f"{cab['distancia']}"; dist_val = cab['distancia'].split()[0].replace('.','')
             if dist_val in RECORDS: full_dist = RECORDS[dist_val]
-            c.drawCentredString(x + width/2, y_start - 12*mm, full_dist)
+            c.drawCentredString(x + width/2, y_start - 11.5*mm, full_dist)
 
             clean_cond = cab['condicion'].replace("PREMIOS:", "").strip().replace("|", "<br/>")
             p = Paragraph(clean_cond, style_cond); w_cond = width; h_cond = p.wrap(w_cond, 3*cm)[1]
-            y_curr = y_start - h_head - 2*mm 
-            p.drawOn(c, x, y_curr - h_cond)
-            y_curr -= (h_cond + 2*mm)
+            y_curr = y_start - h_head - 2*mm; p.drawOn(c, x, y_curr - h_cond); y_curr -= (h_cond + 2*mm)
             y_curr -= 2*mm 
+            
             txt_premios = cab['premios_dinero'].replace("Premios:", "").strip()
             if "Premios:" in txt_premios: txt_premios = txt_premios.replace("Premios:", "")
-            c.setFillColor(colors.black); c.setFont("Helvetica-Bold", 7.5) 
-            c.drawString(x, y_curr, txt_premios) 
-            txt_ap = cab['apuesta'] 
-            c.setFont("Helvetica-BoldOblique", 9)
-            c.drawRightString(x + width, y_curr, txt_ap) 
+            c.setFillColor(colors.black); c.setFont("Helvetica-Bold", 7.5); c.drawString(x, y_curr, txt_premios) 
+
+            # CUADRO AMARILLO CORREGIDO
+            box_w = 6.2*cm # Ancho suficiente
+            box_x = x + width - box_w
+            box_center_x = box_x + (box_w / 2)
+            
+            if color_mode == "digital":
+                c.setFillColor(colors.lightyellow); c.setStrokeColor(colors.gold)
+                c.rect(box_x, y_curr - 4*mm, box_w, 8*mm, fill=1, stroke=1)
+                c.setFillColor(colors.black)
+
+            txt_ap = cab['apuesta']; c.setFont("Helvetica-BoldOblique", 9)
+            c.drawCentredString(box_center_x, y_curr + 0.5*mm, txt_ap) # Texto centrado
+            
             y_curr -= 4*mm
+            
             detalle_ap = cab['incremento_2'] 
-            if detalle_ap:
-                c.setFont("Helvetica-Bold", 7)
-                c.drawString(x, y_curr, detalle_ap)
+            if detalle_ap: c.setFont("Helvetica-Bold", 7); c.drawString(x, y_curr, detalle_ap)
+            
             inc_val = _parse_money(cab['incremento'])
-            if inc_val > 0:
+            if inc_val > 0: 
                 txt_inc = f"INCREMENTO: $ {inc_val:,.0f}".replace(",",".")
                 c.setFont("Helvetica-BoldOblique", 9)
-                c.drawRightString(x + width, y_curr, txt_inc) 
+                c.drawCentredString(box_center_x, y_curr - 0.5*mm, txt_inc) # Texto centrado
+
             h_info_block = h_head + h_cond + 1.2*cm 
+
             data = [['4 Ult.', 'Nº', 'Caballo', 'Pelo', 'Jockey', 'E Kg', 'Padre-Madre', 'Caballeriza', 'Cuidador']]
             for row in carrera['tabla_caballos']:
                 pm = Paragraph(str(row[6]), style_cell_left); caballeriza = Paragraph(str(row[7]), style_cell_left); cuidador = Paragraph(str(row[8]), style_cell_left)
                 caballo = Paragraph(f"<b>{str(row[2])}</b>", style_cell_left)
                 jockey = Paragraph(str(row[4]), style_cell_left)
-                ult = Paragraph(str(row[0]), style_cell_center)
+                ult = Paragraph(str(row[0]), ParagraphStyle('CellR', parent=styles['Normal'], fontName='Helvetica', fontSize=6.5, leading=7, alignment=TA_RIGHT)) 
                 nro = Paragraph(str(row[1]), style_cell_center)
                 pelo = Paragraph(str(row[3]), style_cell_center)
                 ekg = Paragraph(str(row[5]), style_cell_center)
                 data.append([ult, nro, caballo, pelo, jockey, ekg, pm, caballeriza, cuidador])
-            col_ws = [1.3*cm, 0.6*cm, 3.8*cm, 1.0*cm, 2.0*cm, 0.8*cm, 3.5*cm, 3.2*cm, 3.2*cm]
-            t = Table(data, colWidths=col_ws)
+            
+            col_ws = [1.4*cm, 0.7*cm, 3.0*cm, 1.6*cm, 2.4*cm, 0.9*cm, 3.5*cm, 3.0*cm, 3.0*cm]
+            
+            t = Table(data, colWidths=col_ws, rowHeights=[0.55*cm] * len(data))
             ts = [('GRID', (0,0), (-1,-1), 0.5, colors.black), ('BACKGROUND', (0,0), (-1,0), colors.lightgrey), 
                   ('VALIGN', (0,0), (-1,-1), 'MIDDLE'), ('ALIGN', (0,0), (-1,-1), 'CENTER'), 
                   ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'), ('FONTSIZE', (0,0), (-1,-1), 6.5), 
                   ('TOPPADDING', (0,0), (-1,-1), 0.5), ('BOTTOMPADDING', (0,0), (-1,-1), 0.5), 
                   ('ROWBACKGROUNDS', (1,0), (-1,-1), [colors.white])]
             for i, row in enumerate(carrera['tabla_caballos']):
-                ridx = i + 1; nro = str(row[1]); bg, fg = MANDILES.get(nro, MANDILES['default'])
-                if color_mode == "print": bg, fg = colors.white, colors.black
-                ts.append(('BACKGROUND', (1, ridx), (1, ridx), bg)); ts.append(('TEXTCOLOR', (1, ridx), (1, ridx), fg))
+                ridx = i + 1; nro = str(row[1]); bg_hex, fg_hex = MANDILES.get(nro, MANDILES['default'])
+                if color_mode == "print": bg_hex, fg_hex = "#ffffff", "#000000"
+                # APLICAR COLOR A LA CELDA NRO (Columna 1)
+                ts.append(('BACKGROUND', (1, ridx), (1, ridx), colors.HexColor(bg_hex)))
+                ts.append(('TEXTCOLOR', (1, ridx), (1, ridx), colors.HexColor(fg_hex)))
+            
             t.setStyle(TableStyle(ts)); w_t, h_t = t.wrapOn(c, width, H); y_curr -= (2*mm + h_t); t.drawOn(c, x, y_curr)
+            
             lines_act = carrera['actuaciones'].split('\n')
             count_lines = sum(1 for l in lines_act if l.strip())
-            h_acts = (count_lines * 0.75*cm) + 0.3*cm 
+            h_acts = (count_lines * 0.6*cm) + 0.3*cm 
             y_act = y_curr - 2*mm; c.setFillColor(colors.whitesmoke); c.setStrokeColor(colors.lightgrey); c.rect(x, y_act - h_acts, width, h_acts, fill=1, stroke=1)
             curr_y_txt = y_act - 4*mm
             for l in lines_act:
@@ -351,27 +366,23 @@ def exportar_pdf(color_mode="digital"):
                 if not re.search(r'-\s*[A-Z]{2}$', l): pass
                 m = re.match(r'^(\d+)[-\s]+(.*)', l)
                 if m:
-                    nro, resto = m.groups(); bg, fg = MANDILES.get(str(int(nro)), MANDILES['default'])
-                    if color_mode == "print": bg, fg = colors.white, colors.black
-                    c.setFillColor(bg); c.setStrokeColor(colors.black)
-                    c.circle(x + 3*mm, curr_y_txt - 1.0*mm, 2.5*mm, fill=1, stroke=1)
-                    c.setFillColor(fg); c.setFont("Helvetica-Bold", 7); c.drawCentredString(x + 3*mm, curr_y_txt - 2.0*mm, nro)
-                    c.setFillColor(colors.black); c.setFont("Helvetica", 8)
-                    parts = resto.split("||")
-                    izq = parts[0].strip(); der = parts[1].strip() if len(parts)>1 else ""
-                    c.drawString(x + 7*mm, curr_y_txt - 2.0*mm, izq)
-                    if der:
-                        c.drawCentredString(x + width/2, curr_y_txt - 2.0*mm, "||")
-                        c.drawString(x + width/2 + 3*mm, curr_y_txt - 2.0*mm, der)
-                else: c.setFillColor(colors.black); c.setFont("Helvetica", 8); c.drawString(x + 2*mm, curr_y_txt - 2.5*mm, l)
-                curr_y_txt -= 7.5*mm 
+                    nro, resto = m.groups(); bg_hex, fg_hex = MANDILES.get(str(int(nro)), MANDILES['default'])
+                    if color_mode == "print": bg_hex, fg_hex = "#ffffff", "#000000"
+                    c.setFillColor(colors.HexColor(bg_hex)); c.setStrokeColor(colors.black)
+                    c.circle(x + 3*mm, curr_y_txt - 1.5*mm, 2.5*mm, fill=1, stroke=1)
+                    c.setFillColor(colors.HexColor(fg_hex)); c.setFont("Helvetica-Bold", 7); c.drawCentredString(x + 3*mm, curr_y_txt - 2.5*mm, nro)
+                    c.setFillColor(colors.black); c.setFont("Helvetica", 7)
+                    parts = resto.split("||"); izq = parts[0].strip(); der = parts[1].strip() if len(parts)>1 else ""
+                    c.drawString(x + 7*mm, curr_y_txt - 2.5*mm, izq)
+                    if der: c.drawCentredString(x + width/2, curr_y_txt - 2.5*mm, "||"); c.drawString(x + width/2 + 3*mm, curr_y_txt - 2.5*mm, der)
+                else: c.setFillColor(colors.black); c.setFont("Helvetica", 7); c.drawString(x + 2*mm, curr_y_txt - 2.5*mm, l)
+                curr_y_txt -= 6*mm 
             return (h_info_block + h_t + h_acts + 1.0*cm)
 
         y_cursor = draw_header_p1()
         inc_lines = []; total_inc = 0; total_races = len(programa_completo)
         for i, car in enumerate(programa_completo):
-            cab = car['cabecera']; idx = i + 1
-            monto1 = _parse_money(cab['incremento'])
+            cab = car['cabecera']; idx = i + 1; monto1 = _parse_money(cab['incremento'])
             if monto1 > 0:
                 total_inc += monto1; nom_ap = cab['apuesta'].upper().replace("APUESTA", "").strip(); rango = 1
                 if "CUATERNA" in nom_ap: rango=4
@@ -384,7 +395,6 @@ def exportar_pdf(color_mode="digital"):
                 inc_lines.append(f"{nom_ap}: $ {monto1:,.0f}".replace(",",".") + ".- " + c_str)
             monto2 = _parse_money(cab['incremento_2'])
             if monto2 > 1000: total_inc += monto2
-
         def draw_footer_area(y_pos):
             c.setStrokeColor(colors.black); c.setLineWidth(1.5); c.setFillColor(colors.white); h_box = 1.5*cm + (len(inc_lines) * 0.5*cm)
             c.rect(MX, y_pos, W - 2*MX, h_box, fill=0); c.setFillColor(colors.black); c.setFont("Helvetica-Bold", 14)
@@ -407,7 +417,7 @@ def exportar_pdf(color_mode="digital"):
     except Exception as e: traceback.print_exc(); messagebox.showerror("Error PDF", str(e))
 
 # =============================================================================
-#  SECCIÓN 4: EXCEL (V9.1 ORIGINAL CON BORDES CORREGIDOS)
+#  SECCIÓN 4: EXCEL (EXCEL FIXED SIN ERROR DE VARIABLE)
 # =============================================================================
 
 def exportar_programa_excel():
@@ -439,7 +449,6 @@ def exportar_programa_excel():
              ws.merge_cells(f'I{r}:J{r}'); ci=ws.cell(row=r,column=9,value=f"INCREMENTO: $ {inc_val:,.0f}".replace(",","."));
              ci.font=Font(name='Arial Black',size=9,bold=True,italic=True); ci.alignment=Alignment(horizontal='center',vertical='center')
         else: r+=1 
-
         r+=1
         fila_inicio_tabla=r
         headers=['4 Ult.','Nº','Caballo','Pelo','Jockey','E Kg','Padre-Madre','','Caballeriza','Cuidador']
@@ -452,6 +461,8 @@ def exportar_programa_excel():
             for i in range(6): ws.cell(row=r,column=i+1,value=row[i])
             ws.cell(row=r,column=7,value=row[6]); ws.cell(row=r,column=9,value=row[7]); ws.cell(row=r,column=10,value=row[8])
             r+=1
+        
+        fila_inicio_act = r 
         for l in c['actuaciones'].split('\n'):
             if l.strip():
                 if "Debutante" in l: 
@@ -467,15 +478,18 @@ def exportar_programa_excel():
         fila_fin = r - 1
         for row in ws.iter_rows(min_row=fila_inicio_tabla, max_row=fila_fin, min_col=1, max_col=10):
              for cell in row:
-                 b=Border(left=med,right=med,top=thin,bottom=thin) # LATERALES MED
+                 b=Border(left=med,right=med,top=thin,bottom=thin) 
                  if cell.row == fila_inicio_tabla: b.top=med
                  if cell.row == fila_fin: b.bottom=med
                  if cell.column == 1: b.left=med
                  if cell.column == 10: b.right=med
+                 
+                 # --- AHORA SI FUNCIONA: LA VARIABLE YA EXISTE ---
+                 if cell.row == fila_inicio_act - 1: b.bottom=med
+                 
                  cell.border=b
                  cell.alignment = Alignment(horizontal='center', vertical='center') 
-                 limit_acts = fila_inicio_tabla + len(c['tabla_caballos']) + 1
-                 if cell.row >= limit_acts: # Actuaciones
+                 if cell.row >= fila_inicio_act: # Actuaciones
                      cell.font=Font(name='Calibri',size=7)
                      if cell.column == 1: cell.font=Font(name='Calibri',size=8,bold=True) # Numero Bold
                      if cell.column in (2,7): cell.alignment=Alignment(horizontal='left')
@@ -583,7 +597,7 @@ def accion_importar_resultados(): messagebox.showinfo("OK", "Resultados importad
 # =============================================================================
 
 db_caballos, db_actuaciones = conectar_y_cargar_datos()
-root = tk.Tk(); root.title("Gestión de Programas Hípicos v38.0"); root.configure(bg=COLORS["bg"])
+root = tk.Tk(); root.title("Gestión de Programas Hípicos v45.0"); root.configure(bg=COLORS["bg"])
 try: root.iconbitmap(str(ASSETS_DIR/"programa.ico"))
 except: pass
 
@@ -620,19 +634,25 @@ ttk.Label(f1, text="Fecha Reunión (PDF):", style="Field.TLabel", foreground="re
 entry_fecha = ttk.Entry(f1); entry_fecha.grid(row=0, column=1, columnspan=3, sticky="we", pady=5)
 entry_fecha.insert(0, date.today().strftime("%d DE %B DE %Y").upper())
 
-ttk.Label(f1, text="Selección Word:", style="Field.TLabel").grid(row=1, column=0, sticky="w", pady=5)
-combo_word = ttk.Combobox(f1, width=35, state="readonly"); combo_word.grid(row=1, column=1, columnspan=3, sticky="we", pady=5); combo_word.bind("<<ComboboxSelected>>", aplicar_seleccion_word)
-ttk.Label(f1, text="Nº Carrera:", style="Field.TLabel").grid(row=2, column=0, sticky="w", pady=5); entry_nro_carrera = ttk.Entry(f1, width=10); entry_nro_carrera.grid(row=2, column=1, sticky="w", pady=5, padx=5)
-ttk.Label(f1, text="Horario:", style="Field.TLabel").grid(row=2, column=2, sticky="w", pady=5); entry_horario = ttk.Entry(f1, width=15); entry_horario.grid(row=2, column=3, sticky="w", pady=5, padx=5)
-ttk.Label(f1, text="Premio:", style="Field.TLabel").grid(row=3, column=0, sticky="w", pady=5); entry_premio = ttk.Entry(f1); entry_premio.grid(row=3, column=1, columnspan=3, sticky="we", pady=5)
-ttk.Label(f1, text="Distancia:", style="Field.TLabel").grid(row=4, column=0, sticky="w", pady=5)
+# --- NUEVO CAMPO REUNION ---
+ttk.Label(f1, text="Nº Reunión (PDF):", style="Field.TLabel", foreground="blue").grid(row=1, column=0, sticky="w", pady=5)
+entry_nro_reunion = ttk.Entry(f1, width=10); entry_nro_reunion.grid(row=1, column=1, sticky="w", pady=5)
+entry_nro_reunion.insert(0, "22") # Default
+
+ttk.Label(f1, text="Selección Word:", style="Field.TLabel").grid(row=2, column=0, sticky="w", pady=5)
+combo_word = ttk.Combobox(f1, width=35, state="readonly"); combo_word.grid(row=2, column=1, columnspan=3, sticky="we", pady=5); combo_word.bind("<<ComboboxSelected>>", aplicar_seleccion_word)
+
+ttk.Label(f1, text="Nº Carrera:", style="Field.TLabel").grid(row=3, column=0, sticky="w", pady=5); entry_nro_carrera = ttk.Entry(f1, width=10); entry_nro_carrera.grid(row=3, column=1, sticky="w", pady=5, padx=5)
+ttk.Label(f1, text="Horario:", style="Field.TLabel").grid(row=3, column=2, sticky="w", pady=5); entry_horario = ttk.Entry(f1, width=15); entry_horario.grid(row=3, column=3, sticky="w", pady=5, padx=5)
+ttk.Label(f1, text="Premio:", style="Field.TLabel").grid(row=4, column=0, sticky="w", pady=5); entry_premio = ttk.Entry(f1); entry_premio.grid(row=4, column=1, columnspan=3, sticky="we", pady=5)
+ttk.Label(f1, text="Distancia:", style="Field.TLabel").grid(row=5, column=0, sticky="w", pady=5)
 dist_var = tk.StringVar()
 def _on_dist(*_): 
     k = dist_var.get().strip()
     if k in RECORDS: entry_distancia.delete(0, tk.END); entry_distancia.insert(0, RECORDS[k])
-combo_dist = ttk.Combobox(f1, width=8, values=list(RECORDS.keys()), textvariable=dist_var); combo_dist.bind("<<ComboboxSelected>>", _on_dist); combo_dist.grid(row=4, column=1, sticky="w", pady=5, padx=5); entry_distancia = ttk.Entry(f1); entry_distancia.grid(row=4, column=2, columnspan=2, sticky="we", pady=5)
-ttk.Label(f1, text="Condición (Usar | para salto):", style="Field.TLabel").grid(row=5, column=0, sticky="w", pady=5); entry_condicion = ttk.Entry(f1); entry_condicion.grid(row=5, column=1, columnspan=3, sticky="we", pady=5)
-ttk.Label(f1, text="Premios ($):", style="Field.TLabel").grid(row=6, column=0, sticky="w", pady=5); entry_premios_dinero = ttk.Entry(f1); entry_premios_dinero.grid(row=6, column=1, columnspan=3, sticky="we", pady=5)
+combo_dist = ttk.Combobox(f1, width=8, values=list(RECORDS.keys()), textvariable=dist_var); combo_dist.bind("<<ComboboxSelected>>", _on_dist); combo_dist.grid(row=5, column=1, sticky="w", pady=5, padx=5); entry_distancia = ttk.Entry(f1); entry_distancia.grid(row=5, column=2, columnspan=2, sticky="we", pady=5)
+ttk.Label(f1, text="Condición (Usar | para salto):", style="Field.TLabel").grid(row=6, column=0, sticky="w", pady=5); entry_condicion = ttk.Entry(f1); entry_condicion.grid(row=6, column=1, columnspan=3, sticky="we", pady=5)
+ttk.Label(f1, text="Premios ($):", style="Field.TLabel").grid(row=7, column=0, sticky="w", pady=5); entry_premios_dinero = ttk.Entry(f1); entry_premios_dinero.grid(row=7, column=1, columnspan=3, sticky="we", pady=5)
 
 f2 = ttk.LabelFrame(form_container, text="Apuestas y Caballos", padding=15); f2.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10)
 ttk.Label(f2, text="Apuesta (Título):", style="Field.TLabel").grid(row=0, column=0, sticky="w", pady=5); entry_apuesta = ttk.Entry(f2); entry_apuesta.grid(row=0, column=1, sticky="we", pady=5, padx=5)
