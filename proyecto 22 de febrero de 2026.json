@@ -1,0 +1,1233 @@
+{
+    "fecha": "22 DE FEBRERO DE 2026",
+    "reunion": "2",
+    "carreras": [
+        {
+            "cabecera": {
+                "nro_carrera": "1",
+                "premio": "PREMIO \"\"",
+                "horario": "15:00 Hs.",
+                "distancia": "800 metros - Record Dist.: 43\" 1/5, Enloqueceme 14/12/2025",
+                "condicion": "Para todo spc de 4 a\u00f1os y m\u00e1s edad perdedor en todas las categor\u00edas. | Peso 56 kilos. Yeguas con descargo de 2 kilos. Aprendices sin descargo. ",
+                "premios_dinero": "NO COMPUTABLE - CAT. EXTRAOFICIAL - Premios: $ 1.247.400 - $ 374.200 - $ 311.900 - $ 249.500 - $ 187.100 - $ 124.700",
+                "apuesta": "AP. A GANADOR $ 1 ($ 500 MINIMO), EXACTA $ 200, TRIFECTA $ 200, DOBLE $ 200, CUATERNA $ 300",
+                "incremento": "APUESTA CUATERNA $ 300",
+                "incremento_2": "INCREMENTO: $ 500.000"
+            },
+            "tabla_caballos": [
+                [
+                    "Debuta",
+                    1,
+                    "VECNER",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "0-4-5-7",
+                    2,
+                    "UN TERREMOTO",
+                    "Zaino",
+                    "",
+                    "4 56",
+                    "Hurricane Cat - En Motoneta",
+                    "LA POROTA",
+                    "Nieva Angel E."
+                ],
+                [
+                    "3-5-3-3",
+                    3,
+                    "EMPEROR JACK",
+                    "Zaino",
+                    "",
+                    "5 56",
+                    "Fortify - Empress Jackie",
+                    "DON SIMON",
+                    "Saez Juan E."
+                ],
+                [
+                    "8-6-6-2",
+                    4,
+                    "FUMIKOMI",
+                    "Zaino",
+                    "",
+                    "5 56",
+                    "Japan - Funicula",
+                    "LOS DOS HERMANOS",
+                    "Lobo Miguel A."
+                ],
+                [
+                    "Debuta",
+                    5,
+                    "TIRO PERFECTO",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "4-6-6",
+                    6,
+                    "IL FORTINERO",
+                    "Zaino",
+                    "",
+                    "5 56",
+                    "Conversor - Corsa Prai",
+                    "STUD MANOS BRUJAS",
+                    "Alderete Enrique J."
+                ],
+                [
+                    "4-5-4-5",
+                    7,
+                    "GRAND CARO",
+                    "Alazana",
+                    "",
+                    "4 54",
+                    "Holy Boss - Vera One",
+                    "GRAND EDUARD",
+                    "Gomez Omil Mauricio"
+                ],
+                [
+                    "0-9-5-8",
+                    8,
+                    "NACHO SUN PRIZE",
+                    "Zaino",
+                    "",
+                    "4 56",
+                    "All Business - Sky Sun",
+                    "2 HERMANOS",
+                    "Pedraza Angel O."
+                ],
+                [
+                    "9-6-7-0",
+                    9,
+                    "EL ETIQUETADO",
+                    "Zaino",
+                    "",
+                    "7 56",
+                    "Aspire - Etiquetag",
+                    "LA MILAGROSA",
+                    "Vazquez Ramon R."
+                ],
+                [
+                    "9-7-0-8",
+                    10,
+                    "EXTERMINADOR RIDE",
+                    "Zaino",
+                    "",
+                    "4 56",
+                    "Reride - Exterm The Cause",
+                    "LOS TIOS",
+                    "Peralta Hector D."
+                ]
+            ],
+            "actuaciones": "1  Debutante\n2  28/12/25 - L. Gonzalez - 5\u00ba a 27 cp de Bouza - 1'20\" 1/5 - PB   ||   08/02/26 - L. Gonzalez - 7\u00ba a 7 1/4 cp de Goloso Ken - 45\" 3/5 - PB\n3  14/12/25 - W. Marrades - 3\u00ba a 6 cp de Rio Seguro - 44\" 3/5 - PN   ||   08/02/26 - W. Marrades - 3\u00ba a 3 1/4 cp de Goloso Ken - 45\" 3/5 - PB\n4  28/12/25 - P. Alarcon - 6\u00ba a 27 cp de Bouza - 1'20\" 1/5 - PB   ||   08/02/26 - P. Alarcon - 2\u00ba a 3 cp de Goloso Ken - 45\" 3/5 - PB\n5  Debutante\n6  09/11/25 - P. Alarcon - 6\u00ba a 4 3/4 cp de Le Grand Jour - 44\" 4/5 - PN   ||   08/02/26 - J. Vizcarra - 6\u00ba a 6 1/4 cp de Goloso Ken - 45\" 3/5 - PB\n7  30/11/25 - B. Suarez - 4\u00ba a 4 cp de Giulie Is A Bomb - 1'06\" 2/5 - PN   ||   08/02/26 - B. Suarez - 5\u00ba a 5 1/4 cp de Goloso Ken - 45\" 3/5 - PB\n8  14/12/25 - H. Coronel - 5\u00ba a 14 cp de Rio Seguro - 44\" 3/5 - PN   ||   08/02/26 - H. Coronel - 8\u00ba a 16 1/4 cp de Goloso Ken - 45\" 3/5 - PB\n9  14/12/25 - B. Basualdo - 7\u00ba a 17 1/4 cp de Rio Seguro - 44\" 3/5 - PN   ||   08/02/26 - M. Navarro - 10\u00ba a 20 3/4 cp de Goloso Ken - 45\" 3/5 - PB\n10  09/11/25 - M. Navarro - 11\u00ba a 14 3/4 cp de Le Grand Jour - 44\" 4/5 - PN   ||   14/12/25 - P. Alarcon - 8\u00ba a 19 1/4 cp de Rio Seguro - 44\" 3/5 - PN"
+        },
+        {
+            "cabecera": {
+                "nro_carrera": "2",
+                "premio": "PREMIO \"\"",
+                "horario": "15:40 Hs.",
+                "distancia": "1.300 metros - Record Dist.: 1' 16\" 2/5, Panatta 19/12/2021 - High Commander 08/10/2023 - Jolly Boy 30/11/2025",
+                "condicion": "Para todo spc de 4 a\u00f1os y m\u00e1s edad perdedores. Peso 56 kilos. Descargo de 2 kilos a los de 6 a\u00f1os y m\u00e1s edad.",
+                "premios_dinero": "NO COMPUTABLE - CAT. INTERIOR - Premios: $ 1.831.800 - $ 549.500 - $ 458.000 - $ 366.400 - $ 274.800 - $ 183.200",
+                "apuesta": "AP. A GANADOR $ 1 ($ 500 MINIMO), EXACTA $ 200, TRIFECTA $ 200, DOBLE $ 200, TRIPLO $ 300",
+                "incremento": "APUESTA TRIPLO $ 300",
+                "incremento_2": "INCREMENTO: $ 200.000"
+            },
+            "tabla_caballos": [
+                [
+                    8,
+                    1,
+                    "TALENTO DIVINO",
+                    "Zaino",
+                    "",
+                    "3 56",
+                    "In The Dark - Tamariu",
+                    "SEBA Y CAMI",
+                    "Seme Julio O."
+                ],
+                [
+                    "Debuta",
+                    2,
+                    "BERTHO",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "0-0-7-9",
+                    3,
+                    "ISLAND OF LUCK",
+                    "Zaino",
+                    "",
+                    "10 56",
+                    "Lizard Island - Lady Icicle",
+                    "J O P E M",
+                    "Nieva Pedro A."
+                ],
+                [
+                    "7-9-4-4",
+                    4,
+                    "TAILGATE",
+                    "Zaino",
+                    "",
+                    "4 56",
+                    "Hat Ninja - Time To Talk",
+                    "D'ARTAGNAN",
+                    "Assad Cesar A."
+                ],
+                [
+                    "Debuta",
+                    5,
+                    "SMOKING BLACK",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "4-4-2-4",
+                    6,
+                    "MUNDO DANIEL",
+                    "Zaino",
+                    "",
+                    "4 56",
+                    "Hurricane Cat - Flor De Colores",
+                    "DON VALIENTE",
+                    "Assad Cesar A."
+                ],
+                [
+                    "3-2-3-3",
+                    7,
+                    "SOL POR NORMA",
+                    "Zaino",
+                    "",
+                    "4 56",
+                    "Sol Planet - Normandia",
+                    "DEL VALLE A.A.",
+                    "Sir Miguel A."
+                ],
+                [
+                    "Debuta",
+                    8,
+                    "AMIGUITO ECUATORIANO",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "0-8-6-6",
+                    9,
+                    "BUENOS MUCHACHOS",
+                    "Zaino",
+                    "",
+                    "8 54",
+                    "Sidney's Candy - Buenas Muchachas",
+                    "LA POROTA",
+                    "Nieva Pedro A."
+                ]
+            ],
+            "actuaciones": "1  23/02/25 - F. Moran - 8\u00ba a 46 cp de Anoushka - 1'18\" 4/5 - PN\n2  Debutante\n3  28/12/25 - D. Nacusse - 7\u00ba a 39 cp de Bouza - 1'20\" 1/5 - PB   ||   08/02/26 - K. Olivera - 9\u00ba a 16 3/4 cp de Goloso Ken - 45\" 3/5 - PB\n4  28/12/25 - L. Ponce - 4\u00ba a 9 cp de Bouza - 1'20\" 1/5 - PB   ||   08/02/26 - F. Navarro - 4\u00ba a 3 1/4 cp de Goloso Ken - 45\" 3/5 - PB\n5  Debutante\n6  28/12/25 - W. Marrades - 2\u00ba a 3 1/2 cp de Rio Seguro - 1'21\" 2/5 - PB   ||   08/02/26 - W. Marrades - 4\u00ba a 8 cp de Galana In Love - 1'21\" 1/5 - PB\n7  28/12/25 - M. Rodriguez - 3\u00ba a 4 cp de Bouza - 1'20\" 1/5 - PB   ||   08/02/26 - J. Vizcarra - 3\u00ba a 4 1/2 cp de Galana In Love - 1'21\" 1/5 - PB\n8  Debutante\n9  28/12/25 - B. Basualdo - 6\u00ba a 13 1/2 cp de Rio Seguro - 1'21\" 2/5 - PB   ||   08/02/26 - L. Ponce - 6\u00ba a 18 1/2 cp de Galana In Love - 1'21\" 1/5 - PB"
+        },
+        {
+            "cabecera": {
+                "nro_carrera": "3",
+                "premio": "PREMIO \"\"",
+                "horario": "16:20 Hs.",
+                "distancia": "1.300 metros - Record Dist.: 1' 16\" 2/5, Panatta 19/12/2021 - High Commander 08/10/2023 - Jolly Boy 30/11/2025",
+                "condicion": "Para todo spc de 4 a\u00f1os y m\u00e1s edad ganadores de 1 carrera. Peso 56 kilos. Descargo de 2 kilos a los de 6 a\u00f1os y m\u00e1s edad.",
+                "premios_dinero": "NO COMPUTABLE - CAT. INTERIOR - Premios: $ 1.831.800 - $ 549.500 - $ 458.000 - $ 366.400 - $ 274.800 - $ 183.200",
+                "apuesta": "AP. A GANADOR $ 1 ($ 500 MINIMO), IMPERFECTA $ 200, CUATRIFECTA $ 200, DOBLE $ 200, CUATERNA $ 300",
+                "incremento": "APUESTA CUATERNA $ 300",
+                "incremento_2": "INCREMENTO: $ 500.000"
+            },
+            "tabla_caballos": [
+                [
+                    "0-8-7-2",
+                    1,
+                    "RADIO WAVES",
+                    "Alaz\u00e1n",
+                    "",
+                    "5 54",
+                    "Flesh For Fantasy - Real Proof",
+                    "4 SOLES",
+                    "Piquera Gaston S."
+                ],
+                [
+                    "Debuta",
+                    2,
+                    "Q JOTE",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "9-0-6-7",
+                    3,
+                    "CASHISKING",
+                    "Zaino",
+                    "",
+                    "4 56",
+                    "Forge - Candy Sola",
+                    "EL PONY LEGUIZAMON",
+                    "Leguizamon Guillermo"
+                ],
+                [
+                    "3-3-1",
+                    4,
+                    "CURIOSO MILITAR",
+                    "Alaz\u00e1n",
+                    "",
+                    "4 56",
+                    "Curioso Johan - Mayla Inc",
+                    "MARIA ISABEL",
+                    "Jimenez Juan F."
+                ],
+                [
+                    "4-4-2-1",
+                    5,
+                    "MONTESQUIEU",
+                    "Zaino",
+                    "",
+                    "3 56",
+                    "Hat Ninja - Ma Preferance ",
+                    "EL CALIFA",
+                    "Martin Jorge L."
+                ],
+                [
+                    "8-0-9-8",
+                    6,
+                    "TATY BOONE",
+                    "Zaino",
+                    "",
+                    "6 54",
+                    "Daniel Boone - Tatie Queen",
+                    "LA POROTA",
+                    "Nieva Angel E."
+                ],
+                [
+                    "5-9-4-2",
+                    7,
+                    "FURIOSO LIFE",
+                    "Zaino",
+                    "",
+                    "4 56",
+                    "Furious Key - Past Life",
+                    "NICOLAS T.",
+                    "Tejeda Juan A."
+                ],
+                [
+                    3,
+                    8,
+                    "FRENCH LOVER",
+                    "Zaino",
+                    "",
+                    "4 54",
+                    "Treasure Beach - French Filly",
+                    "LA ILUSION DE GUADA",
+                    "Nieva Sergio R."
+                ],
+                [
+                    "9-5",
+                    9,
+                    "HUMOR AMIGO",
+                    "Zaino",
+                    "",
+                    "4 56",
+                    "Humor Acido - Amiguita Unica",
+                    "SERGIO TOMAS (SDE)",
+                    "Speziale Sergio M."
+                ],
+                [
+                    1,
+                    10,
+                    "BOUZA",
+                    "Zaino",
+                    "",
+                    "4 56",
+                    "Manipulator - Boyra",
+                    "SERGIO TOMAS (SDE)",
+                    "Speziale Sergio M."
+                ],
+                [
+                    "7-0-5-9",
+                    11,
+                    "CORNELL",
+                    "Zaino",
+                    "",
+                    "4 54",
+                    "Hat Ninja - Chapa",
+                    "ESPERANZA",
+                    "Tejeda Juan A."
+                ]
+            ],
+            "actuaciones": "1  28/12/25 - J. Aguirrez - 7\u00ba a 8 1/4 cp de Jazminero Azul - 1'20\" 1/5 - PB   ||   08/02/26 - A. Villegas - 2\u00ba a 3 cp de Domna - 1'14\" 4/5 - PB\n2  Debutante\n3  14/12/25 - F. Brito - 6\u00ba a 15 3/4 cp de Lucky Shadow - 1'31\" 4/5 - PN   ||   28/12/25 - F. Brito - 7\u00ba a 12 3/4 cp de Vacunate - 1'19\" 3/5 - PB\n4  27/07/25 - A. Vai - 3\u00ba a 4 1/2 cp de Furioso Life - 1'20\" 2/5 - PH   ||   30/11/25 - R. Valdez - 1\u00ba gan x 2 1/2 cp a Le Grand Jour - 1'12\" 4/5 - PN\n5  26/04/25 - J. Vizcarra - 2\u00ba a 7 cp de Major Lizard - 1'20\" 1/5 - PN   ||   25/05/25 - J. Vizcarra - 1\u00ba gan x 12 cp a Furioso Amazon - 1'18\" 2/5 - PN\n6  28/12/25 - B. Basualdo - 9\u00ba a S.A de Suffok - 2'07\" 3/5 - PB   ||   08/02/26 - L. Ponce - 8\u00ba a S.A de Domna - 1'14\" 4/5 - PB\n7  30/11/25 - P. Alarcon - 4\u00ba a 13 1/4 cp de Googler - 1'17\" 2/5 - PN   ||   28/12/25 - P. Alarcon - 2\u00ba a 2 1/2 cp de Vacunate - 1'19\" 3/5 - PB\n8  08/02/26 - F. Brito - 3\u00ba a 2 3/4 cp de Select Boy - 1'20\" 4/5 - PB\n9  24/09/25 - R. Camos - 9\u00ba a 23 3/4 cp de Jan De Liche - 1'24\" 1/5 - PN   ||   28/12/25 - F. Caceres - 5\u00ba a 6 1/4 cp de Vacunate - 1'19\" 3/5 - PB\n10  28/12/25 - F. Caceres - 1\u00ba gan x 3 1/2 cp a Winsaday - 1'20\" 1/5 - PB\n11  28/12/25 - P. Alarcon - 5\u00ba a 7 1/2 cp de Jazminero Azul - 1'20\" 1/5 - PB   ||   08/02/26 - L. Gonzalez - 9\u00ba a 23 3/4 cp de Select Boy - 1'20\" 4/5 - PB"
+        },
+        {
+            "cabecera": {
+                "nro_carrera": "4",
+                "premio": "PREMIO \"\"",
+                "horario": "17:00 Hs.",
+                "distancia": "1.200 metros - Record Dist.: 1' 09\" 4/5, Donald Music 28/11/2021",
+                "condicion": "Para todo spc de 5 a\u00f1os y m\u00e1s edad ganadores de 2 carreras, de 6 a\u00f1os y m\u00e1s edad ganadores de 3 carreras y de 7 a\u00f1os y m\u00e1s edad ganadores de 4 carreras. | Peso 54; 56 y 58 kilos. Descargo de 2 kilos a los de 6 a\u00f1os y m\u00e1s edad.",
+                "premios_dinero": "NO COMPUTABLE - CAT. INTERIOR - Premios: $ 1.831.800 - $ 549.500 - $ 458.000 - $ 366.400 - $ 274.800 - $ 183.200",
+                "apuesta": "AP. A GANADOR $ 1 ($ 500 MINIMO), EXACTA $ 200, TRIFECTA $ 200, DOBLE $ 200",
+                "incremento": "",
+                "incremento_2": ""
+            },
+            "tabla_caballos": [
+                [
+                    "9-7-0-7",
+                    1,
+                    "NORTE\u00d1O FOR SALE",
+                    "Alaz\u00e1n",
+                    "",
+                    "10 54",
+                    "Not For Sale - Nominadora",
+                    "MIS NIETOS",
+                    "Matricardi Tito D."
+                ],
+                [
+                    "Debuta",
+                    2,
+                    "LONG VIEW",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "8-4-5-4",
+                    3,
+                    "CANDY GATO",
+                    "Zaino",
+                    "",
+                    "8 54",
+                    "Mahi Mahi - Shavigani",
+                    "CELE Y SABRI",
+                    "Vildoza Enrique F."
+                ],
+                [
+                    "2-6-2-6",
+                    4,
+                    "EURO SPRING",
+                    "Zaino",
+                    "",
+                    "5 58",
+                    "Greenspring - Stormy Embrollada",
+                    "ABUELA TETE",
+                    "Saez Juan E."
+                ],
+                [
+                    "6-9-7-9",
+                    5,
+                    "INDIO ELECTRIC",
+                    "Zaino",
+                    "",
+                    "6 54",
+                    "Electricity - Rainy Flir",
+                    "LOS LECHITAS",
+                    "Peralta Hector D."
+                ],
+                [
+                    "5-0",
+                    6,
+                    "FUGITIVE BOONE",
+                    "Alaz\u00e1n",
+                    "",
+                    "6 52",
+                    "Daniel Boone - Frutta Dolce",
+                    "EL PAJARO (SDE)",
+                    "Arce Julio"
+                ],
+                [
+                    "6-5-5-6",
+                    7,
+                    "EVROS TAMA",
+                    "Zaino",
+                    "",
+                    "5 54",
+                    "Evros - Bretama",
+                    "MONTERRICO",
+                    "Assad Cesar A."
+                ],
+                [
+                    "1-2-1-3",
+                    8,
+                    "GRAND REX",
+                    "Zaino",
+                    "",
+                    "6 58",
+                    "Galan De Cine - Soy La Regia",
+                    "RUBIO'S",
+                    "Ramos Daniel S."
+                ],
+                [
+                    "7-8-6-7",
+                    9,
+                    "ANGEL POETA",
+                    "Alaz\u00e1n",
+                    "",
+                    "7 56",
+                    "Cityscape - Poetisa",
+                    "OJO TURCO",
+                    "Piquera Gaston S."
+                ],
+                [
+                    "5-7-7-6",
+                    10,
+                    "DISTINTO RIG",
+                    "Zaino",
+                    "",
+                    "6 54",
+                    "Riggs - Nadie Como Tu",
+                    "NORITA",
+                    "Chirino Carlos A."
+                ]
+            ],
+            "actuaciones": "1  28/12/25 - E. Mena - 14\u00ba a 15 1/4 cp de Great Daddy - 1'12\" 2/5 - PB   ||   08/02/26 - P. Alarcon - 7\u00ba a 14 1/4 cp de Domna - 1'14\" 4/5 - PB\n2  Debutante\n3  28/12/25 - J. Romano - 5\u00ba a 9 cp de Lord Lancelot - 1'27\" 3/5 - PB   ||   08/02/26 - C. Caram - 4\u00ba a 6 1/4 cp de Domna - 1'14\" 4/5 - PB\n4  28/12/25 - L. Medina - 2\u00ba a 1 cp de Lord Lancelot - 1'27\" 3/5 - PB   ||   08/02/26 - F. Brito - 6\u00ba a 13 cp de Mr. Aidan - 43\" 3/5 - PB\n5  09/11/25 - F. Brito - 7\u00ba a 13 1/2 cp de El Cobre - 1'19\" 2/5 - PN   ||   14/12/25 - C. Rojas - 9\u00ba a S.A de Lord Lancelot - 1'20\" - PN\n6  18/10/25 - F. Coronel - 5\u00ba a 9 cp de Duplexer - 1'25\" 4/5 - PB   ||   28/12/25 - I. Gauna - 12\u00ba a 11 3/4 cp de Great Daddy - 1'12\" 2/5 - PB\n7  05/10/25 - M. Rodriguez - 5\u00ba a 20 cp de Aqua Boy - 1'23\" 4/5 - PN   ||   08/02/26 - J. Vizcarra - 6\u00ba a 23 1/2 cp de Bequepingo - 1'18\" 2/5 - PB\n8  13/04/25 - H. Suarez - 1\u00ba gan x 18 cp a Norte\u00f1o For Sale - 1'18\" 3/5 - PN   ||   08/02/26 - C. Rojas - 3\u00ba a 10 cp de Mr. Aidan - 43\" 3/5 - PB\n9  28/12/25 - W. Figueroa - 6\u00ba a 21 cp de Lord Lancelot - 1'27\" 3/5 - PB   ||   08/02/26 - W. Figueroa - 7\u00ba a 25 cp de Bequepingo - 1'18\" 2/5 - PB\n10  28/12/25 - S. Barrionuevo - 7\u00ba a S.A de Lord Lancelot - 1'27\" 3/5 - PB   ||   08/02/26 - B. Ossan - 6\u00ba a 5 3/4 cp de Select Boy - 1'20\" 4/5 - PB"
+        },
+        {
+            "cabecera": {
+                "nro_carrera": "5",
+                "premio": "PREMIO \"\"",
+                "horario": "17:40 Hs.",
+                "distancia": "1.200 metros - Record Dist.: 1' 09\" 4/5, Donald Music 28/11/2021",
+                "condicion": "Para yeguas spc de 3 a\u00f1os y m\u00e1s edad ganadoras de 1 carrera; de 4 a\u00f1os y m\u00e1s edad ganadoras de 2 carreras | y de 5 a\u00f1os y m\u00e1s edad de Tucum\u00e1n, ganadoras de 3 carreras. Peso 53; 55 y 57 kilos. Descargo de 2 kilos a las de 6 a\u00f1os y m\u00e1s edad.",
+                "premios_dinero": "NO COMPUTABLE - CAT. INTERIOR - Premios: $ 2.628.600 - $ 788.600 - $ 657.200 - $ 525.800 - $ 394.300 - $ 262.900",
+                "apuesta": "AP. A GANADOR $ 1 ($ 500 MINIMO), EXACTA $ 200, TRIFECTA $ 200, DOBLE $ 200, CADENA $ 500",
+                "incremento": "APUESTA CADENA $ 500",
+                "incremento_2": "INCREMENTO: $ 1.000.000"
+            },
+            "tabla_caballos": [
+                [
+                    "3-2-3-1",
+                    1,
+                    "WATERLIGHT",
+                    "Zaina",
+                    "",
+                    "3 57",
+                    "Puerto Escondido - Water Saver",
+                    "MIS NIETOS S.B.F.A.",
+                    "Alvarado Pedro M."
+                ],
+                [
+                    "2-8-5-4",
+                    2,
+                    "CARTA ESCONDIDA",
+                    "Zaina",
+                    "",
+                    "4 53",
+                    "Puerto Escondido - Captive Song",
+                    "EL PONY LEGUIZAMON",
+                    "Leguizamon Guillermo"
+                ],
+                [
+                    "0-7-0-5",
+                    3,
+                    "ELLA DICE",
+                    "Zaina",
+                    "",
+                    "4 53",
+                    "Touareg - Que Mona",
+                    "MARIANITA",
+                    "Martin Jorge L."
+                ],
+                [
+                    "Debuta",
+                    4,
+                    "SEGUILA A FULL",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "4-3-2-2",
+                    5,
+                    "GRAND LUCRE",
+                    "Alazana",
+                    "",
+                    "5 54",
+                    "Holly Boss - Mis Hit Parade",
+                    "GRAND EDUARD",
+                    "Gomez Omil Mauricio"
+                ],
+                [
+                    "0-5-6-1",
+                    6,
+                    "GALANA IN LOVE",
+                    "Zaina",
+                    "",
+                    "4 57",
+                    "Galanazo - Star In Love",
+                    "LUZ DE LUJAN",
+                    "Medina Roberto M."
+                ],
+                [
+                    "5-1-2-2",
+                    7,
+                    "PIU RIMOUT",
+                    "Zaina",
+                    "",
+                    "4 54",
+                    "Remote - Opium Ruler",
+                    "D'ARTAGNAN",
+                    "Assad Cesar A."
+                ],
+                [
+                    "7-9-7-5",
+                    8,
+                    "BLESSED AGAIN",
+                    "Alazana",
+                    "",
+                    "6 55",
+                    "Seek Again - Blessed Girl",
+                    "4 SOLES",
+                    "Piquera Gaston S."
+                ],
+                [
+                    "Debuta",
+                    9,
+                    "CHECK DOUBLE",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ]
+            ],
+            "actuaciones": "1  30/11/25 - A. Vai - 3\u00ba a 4 cp de Giulie Is A Bomb - 1'06\" 2/5 - PN   ||   14/12/25 - F. Moran - 1\u00ba gan x 2 1/2 cp a Impetuosa - 1'13\" 2/5 - PN\n2  14/12/25 - F. Brito - 5\u00ba a 13 cp de Piu Rimout - 1'26\" 3/5 - PN   ||   28/12/25 - F. Brito - 4\u00ba a 16 1/2 cp de Amiguita Bataclana - 1'11\" 1/5 - PB\n3  14/12/25 - C. Caram - 11\u00ba a 32 3/4 cp de Piu Rimout - 1'26\" 3/5 - PN   ||   28/12/25 - C. Caram - 5\u00ba a 18 cp de Amiguita Bataclana - 1'11\" 1/5 - PB\n4  Debutante\n5  30/11/25 - H. Suarez - 2\u00ba a 2 1/2 cp de Verrell - 44\" 3/5 - PN   ||   08/02/26 - P. Alarcon - 2\u00ba a 6 cp de Mr. Aidan - 43\" 3/5 - PB\n6  28/12/25 - M. Rodriguez - 6\u00ba a 18 3/4 cp de Amiguita Bataclana - 1'11\" 1/5 - PB   ||   08/02/26 - P. Alarcon - 1\u00ba gan x 3 1/2 cp a Winsaday - 1'21\" 1/5 - PB\n7  28/12/25 - J. Vizcarra - 2\u00ba a 15 cp de Amiguita Bataclana - 1'11\" 1/5 - PB   ||   08/02/26 - J. Vizcarra - 2\u00ba a 2 1/2 cp de Select Boy - 1'20\" 4/5 - PB\n8  14/12/25 - W. Figueroa - 7\u00ba a 16 cp de Piu Rimout - 1'26\" 3/5 - PN   ||   08/02/26 - W. Figueroa - 5\u00ba a 9 1/2 cp de Galana In Love - 1'21\" 1/5 - PB\n9  Debutante"
+        },
+        {
+            "cabecera": {
+                "nro_carrera": "6",
+                "premio": "PREMIO \"\"",
+                "horario": "18:20 Hs.",
+                "distancia": "700 metros - Record Dist.: 38\" 4/5, Sextans 06/04/1997 - Sarfo 01/03/2020",
+                "condicion": "Para todo producto spc de 2 a\u00f1os debutantes absolutos. Peso 55 kilos. Potrancas con descargo de 2 kilos. Aprendices sin descargo. ",
+                "premios_dinero": "NO COMPUTABLE - CAT. EXTRAOFICIAL - Premios: $ 3.298.700 - $ 989.600 - $ 824.700 - $ 659.700 - $ 494.800 - $ 329.900",
+                "apuesta": "AP. A GANADOR $ 1 ($ 500 MINIMO), EXACTA $ 200, TRIFECTA $ 200, DOBLE $ 200, QUINTUPLO $ 500",
+                "incremento": "APUESTA QUINTUPLO $ 500",
+                "incremento_2": "INCREMENTO: $ 1.000.000"
+            },
+            "tabla_caballos": [
+                [
+                    "Debuta",
+                    1,
+                    "PURPLE KING",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "Debuta",
+                    2,
+                    "PURITO",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "Debuta",
+                    3,
+                    "ASPERO",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "Debuta",
+                    4,
+                    "HOLLY",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "Debuta",
+                    5,
+                    "PUERTO MAGNO",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "Debuta",
+                    6,
+                    "TRUMAN CAPOTE",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "Debuta",
+                    7,
+                    "NURBURGRING",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "Debuta",
+                    8,
+                    "IMMANUEL",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "Debuta",
+                    9,
+                    "PNEURUS",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "Debuta",
+                    10,
+                    "AIRE Y MAR",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "Debuta",
+                    11,
+                    "ENVIDIADO TIME",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ]
+            ],
+            "actuaciones": "1  Debutante\n2  Debutante\n3  Debutante\n4  Debutante\n5  Debutante\n6  Debutante\n7  Debutante\n8  Debutante\n9  Debutante\n10  Debutante\n11  Debutante"
+        },
+        {
+            "cabecera": {
+                "nro_carrera": "7",
+                "premio": "PREMIO \"\"",
+                "horario": "19:00 Hs.",
+                "distancia": "1.300 metros - Record Dist.: 1' 16\" 2/5, Panatta 19/12/2021 - High Commander 08/10/2023 - Jolly Boy 30/11/2025",
+                "condicion": "Para todo producto spc de 3 a\u00f1os perdedores. Peso 56 kilos.",
+                "premios_dinero": "NO COMPUTABLE - CAT. INTERIOR - Premios: $ 3.298.700 - $ 989.600 - $ 824.700 - $ 659.700 - $ 494.800 - $ 329.900",
+                "apuesta": "AP. A GANADOR $ 1 ($ 500 MINIMO), EXACTA $ 200, TRIFECTA $ 200, DOBLE $ 200, CUATERNA $ 500",
+                "incremento": "APUESTA CUATERNA $ 500",
+                "incremento_2": "INCREMENTO: $ 1.000.000"
+            },
+            "tabla_caballos": [
+                [
+                    "8-3-5-4",
+                    1,
+                    "SUPREMO PRIZE",
+                    "Zaino",
+                    "",
+                    "3 56",
+                    "Winning Prize - Supra Gemma",
+                    "MARIA LAURA",
+                    "Jaime Luciano"
+                ],
+                [
+                    "2-9-1-6",
+                    2,
+                    "LIGHT BLACK",
+                    "Zaino",
+                    "",
+                    "3 56",
+                    "Lucullan - Titanium Sale",
+                    "OJO TURCO",
+                    "Piquera Gaston S."
+                ],
+                [
+                    "9-6-4-9",
+                    3,
+                    "CHICA DE BLANCO",
+                    "Zaina",
+                    "",
+                    "3 54",
+                    "Equal Talent - Destapa Felicidad",
+                    "EL CALIFA",
+                    "Martin Jorge L."
+                ],
+                [
+                    "0-2",
+                    4,
+                    "DON CHIPION",
+                    "Zaino",
+                    "",
+                    "3 56",
+                    "Don Chullo - Ongamira",
+                    "RUBIO'S",
+                    "Ramos Daniel S."
+                ],
+                [
+                    "Debuta",
+                    5,
+                    "ISLA BONITA",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "5-6-0-8",
+                    6,
+                    "TALENTO EMBRUJADO",
+                    "Zaino",
+                    "",
+                    "3 56",
+                    "Equal Talent - Bruja De Blair",
+                    "R.R.J.",
+                    "Assad Cesar A."
+                ],
+                [
+                    "9-2-8-7",
+                    7,
+                    "GLANIADOR",
+                    "Alaz\u00e1n",
+                    "",
+                    "3 56",
+                    "Dar La Paz - Glania",
+                    "PIEDRA GRANDE",
+                    "Assad Cesar A."
+                ],
+                [
+                    "6-6-6-3",
+                    8,
+                    "EVER MORE",
+                    "Zaino",
+                    "",
+                    "3 56",
+                    "Long Island Sound - Evidancer",
+                    "SEBA Y CAMI",
+                    "Brito Luis O."
+                ],
+                [
+                    "Debuta",
+                    9,
+                    "HI BUNNY",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "Debuta",
+                    10,
+                    "WERNICKE",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "8-5-8-9",
+                    11,
+                    "APOSTOLICO FRANK",
+                    "Zaino",
+                    "",
+                    "3 56",
+                    "Gidu - Apostolica",
+                    "ABUELA TETE",
+                    "Saez Juan E."
+                ],
+                [
+                    "2-0-2-3",
+                    12,
+                    "TIERNO DE ALMA",
+                    "Zaino",
+                    "",
+                    "3 56",
+                    "Fortify - Timberline",
+                    "EL PILI",
+                    "Jaime Alexis J."
+                ],
+                [
+                    "4-6-0-5",
+                    13,
+                    "DIALECTO",
+                    "Zaino",
+                    "",
+                    "3 56",
+                    "Valid Stripes - Dial Now",
+                    "MARIANITA",
+                    "Martin Jorge L."
+                ]
+            ],
+            "actuaciones": "1  14/12/25 - F. Moran - 5\u00ba a 11 1/4 cp de Soy Nicholas - 1'25\" 4/5 - PN   ||   28/12/25 - S. Barrionuevo - 4\u00ba a 8 cp de Count The Gold - 1'13\" 3/5 - PB\n2  28/12/25 - J. Vizcarra - 1\u00ba gan x 1 1/2 cp a Grimaldo - 46\" 1/5 - PB   ||   08/02/26 - S. Barrionuevo - 6\u00ba a 8 3/4 cp de Principe Dark - 1'14\" 3/5 - PB\n3  14/12/25 - C. Caram - 4\u00ba a 7 cp de Waterlight - 1'13\" 2/5 - PN   ||   28/12/25 - C. Caram - 9\u00ba a 12 1/2 cp de Count The Gold - 1'13\" 3/5 - PB\n4  28/12/25 - E. Mena - 10\u00ba a 8 1/2 cp de Light Black - 46\" 1/5 - PB   ||   08/02/26 - W. Marrades - 2\u00ba a 1 1/2 cp de Principe Dark - 1'14\" 3/5 - PB\n5  Debutante\n6  28/12/25 - L. Ponce - 11\u00ba a 8 1/2 cp de Light Black - 46\" 1/5 - PB   ||   08/02/26 - F. Navarro - 8\u00ba a 11 1/4 cp de Principe Dark - 1'14\" 3/5 - PB\n7  18/10/25 - B. Ossan - 8\u00ba a 7 3/4 cp de Sensacional Prize - 1'32\" 4/5 - PB   ||   28/12/25 - J. Vizcarra - 7\u00ba a 11 1/4 cp de Count The Gold - 1'13\" 3/5 - PB\n8  14/12/25 - M. Rodriguez - 6\u00ba a 18 1/4 cp de Soy Nicholas - 1'25\" 4/5 - PN   ||   08/02/26 - C. Rojas - 3\u00ba a 3 1/2 cp de Principe Dark - 1'14\" 3/5 - PB\n9  Debutante\n10  Debutante\n11  28/12/25 - M. Rodriguez - 8\u00ba a 12 1/4 cp de Count The Gold - 1'13\" 3/5 - PB   ||   08/02/26 - C. Caram - 9\u00ba a 11 3/4 cp de Principe Dark - 1'14\" 3/5 - PB\n12  14/12/25 - J. Bethencourt - 2\u00ba a 3/4 cp de Soy Nicholas - 1'25\" 4/5 - PN   ||   28/12/25 - J. Bethencourt - 3\u00ba a 5 1/2 cp de Count The Gold - 1'13\" 3/5 - PB\n13  30/11/25 - F. Brito - 11\u00ba a 16 cp de Curioso Honey - 1'39\" 3/5 - PN   ||   28/12/25 - L. Medina - 5\u00ba a 9 cp de Count The Gold - 1'13\" 3/5 - PB"
+        },
+        {
+            "cabecera": {
+                "nro_carrera": "8",
+                "premio": "PREMIO \"\"",
+                "horario": "19:40 Hs.",
+                "distancia": "1.300 metros - Record Dist.: 1' 16\" 2/5, Panatta 19/12/2021 - High Commander 08/10/2023 - Jolly Boy 30/11/2025",
+                "condicion": "Para todo spc de 3 a\u00f1os ganadores de 1 carrera y de 4 a\u00f1os ganadores de 2 carreras. Peso 54 y 57 kilos.",
+                "premios_dinero": "NO COMPUTABLE - CAT. INTERIOR - Premios: $ 2.628.600 - $ 788.600 - $ 657.200 - $ 525.800 - $ 394.300 - $ 262.900",
+                "apuesta": "AP. A GANADOR $ 1 ($ 500 MINIMO), EXACTA $ 200, TRIFECTA $ 200, DOBLE $ 200, TRIPLO $ 300",
+                "incremento": "APUESTA TRIPLO $ 300",
+                "incremento_2": "INCREMENTO: $ 300.000"
+            },
+            "tabla_caballos": [
+                [
+                    "Debuta",
+                    1,
+                    "STAVROS DREAM",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "1-2-1-3",
+                    2,
+                    "COUNT THE GOLD",
+                    "Zaino",
+                    "",
+                    "3 56",
+                    "Gold Gulch - Come With Us",
+                    "MIRKO Y CRISTOBAL",
+                    "Jimenez Hector V."
+                ],
+                [
+                    1,
+                    3,
+                    "EL TAIGER",
+                    "Alaz\u00e1n",
+                    "",
+                    "4 57",
+                    "Lizard Island - Equal Pretty",
+                    "DON VILLA (SDE)",
+                    "Salazar Nelson D."
+                ],
+                [
+                    "6-1-7-6",
+                    4,
+                    "SOY NICHOLAS",
+                    "Zaino",
+                    "",
+                    "3 56",
+                    "Nicholas - Soy Integra",
+                    "MINGO Y JUANJO",
+                    "Suarez Marcelo O."
+                ],
+                [
+                    "Debuta",
+                    5,
+                    "NOTTAMBULO",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "1-4-2-4",
+                    6,
+                    "GOOGLER",
+                    "Zaino",
+                    "",
+                    "4 54",
+                    "Galan De Cine - Sweet Hill",
+                    "COCO JEREZ",
+                    "Medina Roberto M."
+                ],
+                [
+                    "Debuta",
+                    7,
+                    "SOLIDUS",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "8-6-3-5",
+                    8,
+                    "ALTRUISMO",
+                    "Zaino",
+                    "",
+                    "3 56",
+                    "Puerto Escondido - Couldn't Be Better",
+                    "MONTERRICO",
+                    "Assad Cesar A."
+                ],
+                [
+                    "7-2-2-4",
+                    9,
+                    "DON PIPER",
+                    "Zaino",
+                    "",
+                    "3 56",
+                    "Hat Ninja - Dear Roman",
+                    "MARIA LAURA",
+                    "Jaime Luciano"
+                ]
+            ],
+            "actuaciones": "1  Debutante\n2  28/12/25 - H. Suarez - 1\u00ba gan x 2 1/2 cp a El Patriarca - 1'13\" 3/5 - PB   ||   08/02/26 - F. Brito - 3\u00ba a 12 cp de Giro Latino - 1'13\" - PB\n3  18/10/25 - L. Vai - 1\u00ba gan x 3/4 cp a O Mais Grande - 1'12\" 3/5 - PB\n4  28/12/25 - R. Camos - 7\u00ba a 15 1/2 cp de Il Felino - 1'18\" 3/5 - PB   ||   08/02/26 - S. Barrionuevo - 6\u00ba a 15 1/4 cp de Giro Latino - 1'13\" - PB\n5  Debutante\n6  28/12/25 - M. Rodriguez - 2\u00ba a 3/4 cp de Great Daddy - 1'12\" 2/5 - PB   ||   08/02/26 - P. Alarcon - 4\u00ba a 18 cp de Bequepingo - 1'18\" 2/5 - PB\n7  Debutante\n8  28/12/25 - S. Barrionuevo - 3\u00ba a 8 cp de Il Felino - 1'18\" 3/5 - PB   ||   08/02/26 - L. Ponce - 5\u00ba a 15 cp de Giro Latino - 1'13\" - PB\n9  14/12/25 - C. Rojas - 2\u00ba a 2 cp de Lucky Sant - 1'25\" 2/5 - PN   ||   28/12/25 - J. Vizcarra - 4\u00ba a 10 cp de Il Felino - 1'18\" 3/5 - PB"
+        },
+        {
+            "cabecera": {
+                "nro_carrera": "9",
+                "premio": "ESPECIAL \"\"",
+                "horario": "20:20 Hs.",
+                "distancia": "1.500 metros - Record Dist.: 1' 28\" 4/5, Storm Chuck 24/08/2025",
+                "condicion": "Para todo spc de 3 a\u00f1os y m\u00e1s edad. Peso 52 kilos. Recargo de 1 kilo por carrera ganada. | Descargo de 1 kilo por cada a\u00f1o cumplido a partir de los 6 a\u00f1os. Descargo de 2 kilos a los que no se hayan clasificado hasta el 3er puesto, en sus 3 \u00faltimas actuaciones en Tucum\u00e1n. Aprendices sin descargo.",
+                "premios_dinero": "NO COMPUTABLE - CAT. INTERIOR - Premios: $ 2.795.000 - $ 838.500 - $ 698.800 - $ 559.000 - $ 419.300 - $ 279.500",
+                "apuesta": "AP. A GANADOR $ 1 ($ 500 MINIMO), EXACTA $ 200, TRIFECTA $ 200, DOBLE FINAL $ 300",
+                "incremento": "APUESTA DOBLE FINAL $ 300",
+                "incremento_2": "INCREMENTO: $ 200.000"
+            },
+            "tabla_caballos": [
+                [
+                    "4-3-5-2",
+                    1,
+                    "GOLDEN WARRIOR",
+                    "Zaino",
+                    "",
+                    "5 57",
+                    "Santillano - Golden Sonata ",
+                    "RUBIO'S",
+                    "Ramos Daniel S."
+                ],
+                [
+                    "1-1-4-5",
+                    2,
+                    "MOCK JOY",
+                    "Alaz\u00e1n",
+                    "",
+                    "3 56",
+                    "Roman Joy - Make A Promise",
+                    "5 DE COPAS",
+                    "Cuellar Sergio D."
+                ],
+                [
+                    "6-6",
+                    3,
+                    "TRENDIC TOPIC",
+                    "Zaino",
+                    "",
+                    "5 56",
+                    "Sabayon\t - Con Firmeza",
+                    "SAGUIR",
+                    "Nieva Sergio R."
+                ],
+                [
+                    "1-3-2-1",
+                    4,
+                    "SUFFOK",
+                    "Zaino",
+                    "",
+                    "5 58",
+                    "Forge - Strike Reward",
+                    "L.C.J.",
+                    "Noguera Assad Lazaro"
+                ],
+                [
+                    "1-4-1-3",
+                    5,
+                    "ZINZAN BROOKE",
+                    "Alaz\u00e1n",
+                    "",
+                    "5 58",
+                    "Greenspring - Nathalie",
+                    "LOS MOLESTOS",
+                    "Gallego Jose M."
+                ],
+                [
+                    "5-1",
+                    6,
+                    "BEQUEPINGO",
+                    "Zaino",
+                    "",
+                    "6 56",
+                    "Cityscape - Poetisa",
+                    "LA ILUSION DE GUADA",
+                    "Nieva Sergio R."
+                ],
+                [
+                    "5-6-7-1",
+                    7,
+                    "IL FELINO",
+                    "Zaino",
+                    "",
+                    "3 56",
+                    "Tetaze - Parmigiana",
+                    "DON ANTONIO",
+                    "Chirino Carlos A."
+                ]
+            ],
+            "actuaciones": "1  28/12/25 - M. Rodriguez - 5\u00ba a 7 3/4 cp de Sweet Elementary - 1'24\" 1/5 - PB   ||   08/02/26 - W. Marrades - 2\u00ba a 7 cp de Show Goes On - 1'24\" 3/5 - PB\n2  24/09/25 - M. Rodriguez - 2\u00ba a 3/4 cp de Smiling Nich - 1'24\" 4/5 (Dist.) - PN   ||   18/10/25 - F. Moran - 5\u00ba a 2 1/2 cp de Sensacional Prize - 1'32\" 4/5 - PB\n3  09/11/25 - F. Brito - 6\u00ba a 8 1/2 cp de Enloqueceme - 44\" 1/5 - PN   ||   08/02/26 - S. Barrionuevo - 6\u00ba a 32 3/4 cp de Show Goes On - 1'24\" 3/5 - PB\n4  30/11/25 - F. Moran - 2\u00ba a 2 1/2 cp de Show Goes On - 1'53\" 1/5 - PN   ||   28/12/25 - F. Moran - 1\u00ba gan x 1 1/2 cp a Dr. Legasov - 2'07\" 3/5 - PB\n5  14/12/25 - H. Suarez - 1\u00ba gan x 1/2 cp a Fin Del Mundo - 1'39\" 4/5 - PN   ||   28/12/25 - H. Suarez - 3\u00ba a 7 cp de Sweet Elementary - 1'24\" 1/5 - PB\n6  28/12/25 - R. Villagra - 5\u00ba a 3 1/4 cp de Great Daddy - 1'12\" 2/5 - PB   ||   08/02/26 - F. Brito - 1\u00ba gan x 8 cp a Seeking Money - 1'18\" 2/5 - PB\n7  30/11/25 - F. Moran - 7\u00ba a 10 3/4 cp de Curioso Honey - 1'39\" 3/5 - PN   ||   28/12/25 - C. Rojas - 1\u00ba gan x 8 cp a Elegilo A El - 1'18\" 3/5 - PB"
+        },
+        {
+            "cabecera": {
+                "nro_carrera": "10",
+                "premio": "PREMIO \"\"",
+                "horario": "21:00 Hs.",
+                "distancia": "1.400 metros - Record Dist.: 1' 22\" 3/5, Patani 29/10/2017 - Dipinto 28/11/2021",
+                "condicion": "Para todo spc de 5 a\u00f1os y m\u00e1s edad ganadores de 3 carreras, yeguas ganadoras de 4 carreras; de 6 a\u00f1os y m\u00e1s edad ganadores de 4 carreras | y de 7 a\u00f1os y m\u00e1s edad de Tucum\u00e1n,  ganadores de 5 carreras. Peso 54; 56 y 58 kilos. Descargo de 2 kilos a los de 6 a\u00f1os y m\u00e1s edad.",
+                "premios_dinero": "NO COMPUTABLE - CAT. INTERIOR - Premios: $ 1.831.800 - $ 549.500 - $ 458.000 - $ 366.400 - $ 274.800 - $ 183.200",
+                "apuesta": "AP. A GANADOR $ 1 ($ 500 MINIMO), EXACTA $ 200, TRIFECTA $ 200",
+                "incremento": "",
+                "incremento_2": ""
+            },
+            "tabla_caballos": [
+                [
+                    "8-8-4-1",
+                    1,
+                    "DOMNA",
+                    "Zaina",
+                    "",
+                    "6 54",
+                    "Holy Boss - Danum",
+                    "MINGO Y JUANJO",
+                    "Suarez Marcelo O."
+                ],
+                [
+                    "9-6-7-0",
+                    2,
+                    "EL MOONWALK",
+                    "Zaino",
+                    "",
+                    "5 56",
+                    "Il Campione - Caminata Lunar",
+                    "LOS TIOS",
+                    "Peralta Hector D."
+                ],
+                [
+                    1,
+                    3,
+                    "SELECT BOY",
+                    "Zaino",
+                    "",
+                    "5 56",
+                    "Suggestive Boy - Miss Selection\t",
+                    "CHANTA",
+                    "Tejeda Juan A."
+                ],
+                [
+                    "3-1-6-3",
+                    4,
+                    "LUCKY SHADOW",
+                    "Alaz\u00e1n",
+                    "",
+                    "6 56",
+                    "Lucky Island - Alba Shadow ",
+                    "MUSTAMAC",
+                    "Polizzi Eduardo R."
+                ],
+                [
+                    "3-4-1-1",
+                    5,
+                    "LORD LANCELOT",
+                    "Zaino",
+                    "",
+                    "6 54",
+                    "Lord Jan - Lanzarina",
+                    "EL PONY LEGUIZAMON",
+                    "Leguizamon Guillermo"
+                ],
+                [
+                    "1-2-8-2",
+                    6,
+                    "SEEKING MONEY",
+                    "Zaina",
+                    "",
+                    "5 56",
+                    "Seek Again - Lizarina",
+                    "DON VALIENTE",
+                    "Assad Cesar A."
+                ],
+                [
+                    "8-7-0-7",
+                    7,
+                    "CARO AMICI",
+                    "Alaz\u00e1n",
+                    "",
+                    "7 56",
+                    "Full Mast - Capricieuse",
+                    "DON VALIENTE",
+                    "Assad Cesar A."
+                ],
+                [
+                    "1-5-9-5",
+                    8,
+                    "DUPLEXER",
+                    "Zaino",
+                    "",
+                    "5 56",
+                    "Hi Happy - Dulcedumbre",
+                    "LOS MOLESTOS",
+                    "Gallego Jose M."
+                ]
+            ],
+            "actuaciones": "1  28/12/25 - J. Vizcarra - 4\u00ba a 7 1/2 cp de Lord Lancelot - 1'27\" 3/5 - PB   ||   08/02/26 - J. Vizcarra - 1\u00ba gan x 3 cp a Radio Waves - 1'14\" 4/5 - PB\n2  14/12/25 - P. Alarcon - 7\u00ba a 13 cp de Jan De Liche - 1'11\" 3/5 - PN   ||   28/12/25 - F. Brito - 11\u00ba a 9 1/4 cp de Great Daddy - 1'12\" 2/5 - PB\n3  08/02/26 - S. Barrionuevo - 1\u00ba gan x 2 1/2 cp a Piu Rimout - 1'20\" 4/5 - PB\n4  28/12/25 - L. Ponce - 6\u00ba a 5 1/4 cp de Great Daddy - 1'12\" 2/5 - PB   ||   08/02/26 - L. Ponce - 3\u00ba a 10 cp de Bequepingo - 1'18\" 2/5 - PB\n5  14/12/25 - F. Brito - 1\u00ba gan x 1 cp a Mu\u00f1eca Texana - 1'20\" - PN   ||   28/12/25 - F. Brito - 1\u00ba gan x 1 cp a Euro Spring - 1'27\" 3/5 - PB\n6  28/12/25 - W. Marrades - 8\u00ba a 6 1/4 cp de Great Daddy - 1'12\" 2/5 - PB   ||   08/02/26 - W. Marrades - 2\u00ba a 8 cp de Bequepingo - 1'18\" 2/5 - PB\n7  28/12/25 - R. Valdez - 10\u00ba a 21 3/4 cp de Sweet Elementary - 1'24\" 1/5 - PB   ||   08/02/26 - C. Caram - 7\u00ba a 14 1/2 cp de Mr. Aidan - 43\" 3/5 - PB\n8  28/12/25 - H. Suarez - 9\u00ba a 7 3/4 cp de Great Daddy - 1'12\" 2/5 - PB   ||   08/02/26 - B. Suarez - 5\u00ba a 21 1/2 cp de Bequepingo - 1'18\" 2/5 - PB"
+        }
+    ]
+}
