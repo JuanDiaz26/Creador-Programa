@@ -64,7 +64,7 @@ MANDILES = {
 }
 
 RECORDS = {
-    "700":  '700 metros - Record Dist.: 38" 4/5, Sextans 06/04/1997 - Sarfo 01/03/2020',
+    "700":  '700 metros - Record Dist.: 38" 2/5, Holly 28/02/2026',
     "800":  '800 metros - Record Dist.: 43" 1/5, Enloqueceme 14/12/2025',
     "1000": '1.000 metros - Record Dist.: 58" 2/5, Sarfo 23/07/2020',
     "1100": '1.100 metros - Record Dist.: 1\' 04" 3/5, Sold Out 29/08/2021',

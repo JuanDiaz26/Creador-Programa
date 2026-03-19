@@ -429,7 +429,7 @@ if __name__ == "__main__":
         '07-09-25': '07 DE SEPTIEMBRE DE 2025.xlsx','24-09-25': '24 DE SEPTIEMBRE DE 2025.xlsx',
         '05-10-25': '05 DE OCTUBRE DE 2025.xlsx', '18-10-25': '18 DE OCTUBRE DE 2025.xlsx', '09-11-25': '09 DE NOVIEMBRE DE 2025.xlsx',
         '30-11-25': '30 DE NOVIEMBRE DE 2025.xlsx','14-12-25': '14 DE DICIEMBRE DE 2025.xlsx','28-12-25': '28 DE DICIEMBRE DE 2025.xlsx',
-        '08-02-26': '8 DE FEBRERO DE 2026.xlsx',
+        '08-02-26': '8 DE FEBRERO DE 2026.xlsx', '28-02-26': '28 DE FEBRERO DE 2026.xlsx', '08-03-26': '8 DE MARZO DE 2026.xlsx',
     }
 
     LISTA_RESULTADOS = {
@@ -444,7 +444,8 @@ if __name__ == "__main__":
         '05-10-25': 'Resultados 05-10-25.xlsx', '18-10-25': 'Resultados 18-10-25.xlsx',
         '09-11-25': 'Resultados 09-11-25.xlsx', '30-11-25': 'Resultados 30-11-25.xlsx',
         '14-12-25': 'Resultados 14-12-25.xlsx', '28-12-25': 'Resultados 28-12-25.xlsx',
-        '08-02-26': 'Resultados 08-02-26.xlsx',
+        '08-02-26': 'Resultados 08-02-26.xlsx', '28-02-26': 'Resultados 28-02-26.xlsx',
+        '08-03-26': 'Resultados 08-03-26.xlsx',
     }
     # >>> FIN EDITABLE <<<
 
