@@ -2,7 +2,7 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, simpledialog, Menu
 import pandas as pd
-import sqlite3, os, re, sys, traceback, json
+import sqlite3, os, re, sys, traceback, json, difflib
 from pathlib import Path
 from datetime import date, datetime
 
@@ -50,7 +50,7 @@ DATOS_WORD_CACHED = []
 entry_fecha = None; entry_nro_reunion = None; entry_nro_carrera = None; entry_horario = None; entry_premio = None
 entry_distancia = None; entry_condicion = None; entry_premios_dinero = None; entry_apuesta = None
 entry_incremento = None; entry_incremento_2 = None; combo_word = None; combo_dist = None
-text_caballos = None; text_actuaciones = None; tabla_programa = None; lista_carreras = None
+text_caballos = None; text_kilos = None; text_actuaciones = None; tabla_programa = None; lista_carreras = None
 contador_carreras = None; btn_accion = None
 
 # --- COLORES OFICIALES MANDILES ---
@@ -498,17 +498,42 @@ def generar_programa_en_tabla():
     if db_caballos.empty: messagebox.showwarning("BD vacía", "No hay datos."); return
     for i in tabla_programa.get_children(): tabla_programa.delete(i)
     text_actuaciones.delete("1.0", tk.END)
+    
     nombres = [n.strip() for n in text_caballos.get("1.0", tk.END).strip().split('\n') if n.strip()]
+    kilos_manuales = [k.strip() for k in text_kilos.get("1.0", tk.END).strip().split('\n') if k.strip()]
     numero = 1; ultimo = None
-    for nombre_in in nombres:
+    
+    # El "enumerate" es clave acá para que la "i" vaya contando 0, 1, 2... y coincida con los kilos
+    for i, nombre_in in enumerate(nombres):
         es_a = False; nombre = nombre_in
         if re.search(r'\(\s*a\s*\)\s*$', nombre_in, flags=re.I): es_a = True; nombre = re.sub(r'\(\s*a\s*\)\s*$', '', nombre_in, flags=re.I).strip()
+        
+        # --- MEJORA: "¿Quisiste decir?" ---
+        nombre_upper = nombre.upper()
+        if not db_caballos.empty and nombre_upper not in db_caballos['Caballo'].values:
+            lista_nombres_db = db_caballos['Caballo'].astype(str).tolist()
+            sugerencias = difflib.get_close_matches(nombre_upper, lista_nombres_db, n=1, cutoff=0.7)
+            if sugerencias:
+                sugerencia = sugerencias[0]
+                resp = messagebox.askyesno("Posible error de tipeo", f"No se encontró a '{nombre_upper}' en la base de datos.\n\n¿Quisiste decir '{sugerencia}'?")
+                if resp:
+                    nombre = sugerencia
+        # -----------------------------------
+        
         datos = obtener_datos_caballo(nombre, db_caballos, db_actuaciones)
+        
+        # --- MEJORA: KILOS MANUALES ---
+        kilo_asignado = kilos_manuales[i] if i < len(kilos_manuales) else datos.get('Peso', '')
+        datos['E Kg'] = f"{datos.get('Edad', '')} {kilo_asignado}".strip()
+        # ------------------------------
+        
         if es_a and ultimo is not None: nro = f"{ultimo}a"
         else: nro = str(numero); ultimo = numero
         if not es_a: numero += 1
+        
         datos['Jockey-Descargo'] = ""; datos['Nº'] = nro; datos['Caballo'] = nombre.upper()
         tabla_programa.insert('', tk.END, values=[datos.get(c, '') for c in ['4 Ult.','Nº','Caballo','Pelo','Jockey-Descargo','E Kg','Padre - Madre','Caballeriza','Cuidador']])
+        
         acts = datos.get('actuaciones'); lineas = []
         if acts is None or acts.empty: lineas.append("Debutante")
         else:
@@ -530,7 +555,7 @@ def obtener_datos_formulario():
 
 def limpiar_formulario():
     for e in [entry_nro_carrera, entry_premio, entry_horario, entry_distancia, entry_condicion, entry_premios_dinero, entry_apuesta, entry_incremento, entry_incremento_2]: e.delete(0, tk.END)
-    text_caballos.delete("1.0", tk.END); text_actuaciones.delete("1.0", tk.END)
+    text_caballos.delete("1.0", tk.END); text_kilos.delete("1.0", tk.END); text_actuaciones.delete("1.0", tk.END)
     for i in tabla_programa.get_children(): tabla_programa.delete(i)
     global indice_edicion; indice_edicion = None; btn_accion.config(text="Añadir Carrera")
 
@@ -547,7 +572,9 @@ def cargar_carrera_para_editar():
     idx = int(sel[0]); limpiar_formulario(); global indice_edicion; indice_edicion = idx; btn_accion.config(text="Guardar Cambios")
     data = programa_completo[idx]; cab = data['cabecera']
     entry_nro_carrera.insert(0, cab['nro_carrera']); entry_premio.insert(0, cab['premio']); entry_horario.insert(0, cab['horario']); entry_distancia.insert(0, cab['distancia']); entry_condicion.insert(0, cab['condicion']); entry_premios_dinero.insert(0, cab['premios_dinero']); entry_apuesta.insert(0, cab['apuesta']); entry_incremento.insert(0, cab['incremento']); entry_incremento_2.insert(0, cab['incremento_2'])
-    for row in data['tabla_caballos']: tabla_programa.insert('', tk.END, values=row); text_caballos.insert(tk.END, row[2] + "\n")
+    for row in data['tabla_caballos']: tabla_programa.insert('', tk.END, values=row); text_caballos.insert(tk.END, row[2] + "\n"); ekg_partes = str(row[5]).strip().split(maxsplit=1)
+    kilo_val = ekg_partes[1] if len(ekg_partes) > 1 else ""
+    text_kilos.insert(tk.END, kilo_val + "\n")
     text_actuaciones.insert(tk.END, data['actuaciones']); messagebox.showinfo("Editando", f"Editando carrera {cab['nro_carrera']}.")
 
 def eliminar_carrera():
@@ -631,7 +658,13 @@ f2 = ttk.LabelFrame(form_container, text="Apuestas y Caballos", padding=15); f2.
 ttk.Label(f2, text="Apuesta (Título):", style="Field.TLabel").grid(row=0, column=0, sticky="w", pady=5); entry_apuesta = ttk.Entry(f2); entry_apuesta.grid(row=0, column=1, sticky="we", pady=5, padx=5)
 ttk.Label(f2, text="Incremento ($):", style="Field.TLabel").grid(row=1, column=0, sticky="w", pady=5); entry_incremento = ttk.Entry(f2, width=15); entry_incremento.grid(row=1, column=1, sticky="w", pady=5, padx=5)
 ttk.Label(f2, text="Detalle Apuestas:", style="Field.TLabel").grid(row=2, column=0, sticky="w", pady=5); entry_incremento_2 = ttk.Entry(f2, width=15); entry_incremento_2.grid(row=2, column=1, sticky="w", pady=5, padx=5)
-ttk.Label(f2, text="Pegar Lista Caballos:", style="Field.TLabel").grid(row=3, column=0, sticky="nw", pady=5); text_caballos = tk.Text(f2, height=6, width=30); text_caballos.grid(row=3, column=1, rowspan=3, sticky="we", pady=5, padx=5)
+ttk.Label(f2, text="Pegar Lista Caballos:").grid(row=3, column=0, sticky="nw", pady=5)
+text_caballos = tk.Text(f2, height=6, width=22) # Lo achicamos a 22 de ancho
+text_caballos.grid(row=3, column=1, rowspan=3, sticky="we", pady=5, padx=5)
+
+ttk.Label(f2, text="Kilos:").grid(row=3, column=2, sticky="nw", pady=5)
+text_kilos = tk.Text(f2, height=6, width=8) # Cajita nueva para los kilos
+text_kilos.grid(row=3, column=3, rowspan=3, sticky="we", pady=5, padx=5)
 
 btn_box = ttk.Frame(main_content, padding=10); btn_box.pack(fill=tk.X)
 ttk.Button(btn_box, text="1. Procesar Tabla (Verificar)", command=generar_programa_en_tabla).pack(side=tk.LEFT, padx=10)
