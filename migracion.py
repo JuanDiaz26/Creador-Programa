@@ -59,11 +59,6 @@ def find_col_index_by_keyword(header_row, keyword):
 def _extraer_tiempo_limpio(df_carrera_actual):
     """
     Extrae el tiempo ganador de un bloque de resultados.
-    Soporta:
-      - 1'13" / 1' 13"
-      - 1'13" 1/5
-      - 44"
-      - 44" 4/5
     """
     try:
         texto = ' '.join(' '.join(row.astype(str)) for _, row in df_carrera_actual.iterrows())
@@ -317,6 +312,7 @@ def cargar_base_de_datos_caballos(filepath, sheet_name):
         header_row = df_str.iloc[header_index]
         col_map = {
             'CABALLO':           find_col_index_by_keyword(header_row, 'caballo'),
+            'Nº':                find_col_index_by_keyword(header_row, 'nº') or find_col_index_by_keyword(header_row, 'n°'),
             'Pelo':              find_col_index_by_keyword(header_row, 'pelo'),
             'Jockey-Descargo':   find_col_index_by_keyword(header_row, 'jockey'),
             'E Kg':              find_col_index_by_keyword(header_row, 'kg'),
@@ -329,8 +325,11 @@ def cargar_base_de_datos_caballos(filepath, sheet_name):
             continue
 
         end_of_block = header_indices[i + 1] if i + 1 < len(header_indices) else len(df_full)
-
         current_index = header_index + 1
+        
+        # DICCIONARIO CLAVE: Mapea los caballos por su número de mandil
+        caballos_por_numero = {}
+
         while current_index < end_of_block:
             row = df_full.iloc[current_index]
 
@@ -342,16 +341,43 @@ def cargar_base_de_datos_caballos(filepath, sheet_name):
                 try:
                     horse = {key: (row.iloc[idx] if idx is not None else '')
                              for key, idx in col_map.items()}
-                    horse['CABALLO'] = str(horse['CABALLO']).strip().upper()
+                    horse['CABALLO'] = re.sub(r'\s+', ' ', str(horse['CABALLO'])).strip().upper()
+                    
                     if horse['CABALLO'] and horse['CABALLO'] != 'NAN':
+                        horse['texto_act_ext'] = []  
                         all_horses.append(horse)
+                        
+                        # Atrapamos el número (ej: "7") y lo guardamos en el diccionario
+                        nro_str = str(horse.get('Nº', ''))
+                        nro_key = "".join(filter(str.isdigit, nro_str))
+                        if nro_key:
+                            caballos_por_numero[nro_key] = horse
+                            
                 except IndexError:
                     pass
+            else:
+                # Si llegamos acá, son los textos de abajo. Buscamos el número a la izquierda.
+                celdas = [str(x).strip() for x in row.values if str(x).strip() and str(x).strip().upper() != 'NAN']
+                if celdas:
+                    primer_celda = celdas[0]
+                    nro_key = "".join(filter(str.isdigit, primer_celda))
+                    
+                    # Si el número coincide con un caballo (ej: "7" = Talento Divino)
+                    if nro_key in caballos_por_numero and len(primer_celda) <= 3:
+                        # Guardamos todas las actuaciones que estén a la derecha de ese número
+                        for celda in celdas[1:]:
+                            if len(celda) > 10 and not "INCREMENTO" in celda.upper() and not "APUESTA" in celda.upper():
+                                caballos_por_numero[nro_key]['texto_act_ext'].append(celda)
 
             current_index += 1
 
     if not all_horses:
         return None
+
+    # Juntamos los textos guardados
+    for h in all_horses:
+        h['TEXTO_ACT_EXT_FINAL'] = "\n".join(h.get('texto_act_ext', []))
+
     return pd.DataFrame(all_horses)
 
 # =========================================================
@@ -386,6 +412,7 @@ def crear_base_de_datos():
             caballeriza TEXT,
             cuidador TEXT,
             ultima_actuacion_externa TEXT,
+            texto_actuaciones_externas TEXT,
             snapshot_programa_fecha DATE
         )
     ''')
@@ -430,6 +457,7 @@ if __name__ == "__main__":
         '05-10-25': '05 DE OCTUBRE DE 2025.xlsx', '18-10-25': '18 DE OCTUBRE DE 2025.xlsx', '09-11-25': '09 DE NOVIEMBRE DE 2025.xlsx',
         '30-11-25': '30 DE NOVIEMBRE DE 2025.xlsx','14-12-25': '14 DE DICIEMBRE DE 2025.xlsx','28-12-25': '28 DE DICIEMBRE DE 2025.xlsx',
         '08-02-26': '8 DE FEBRERO DE 2026.xlsx', '28-02-26': '28 DE FEBRERO DE 2026.xlsx', '08-03-26': '08 DE MARZO DE 2026.xlsx',
+        '22-03-26': '22 DE MARZO DE 2026.xlsx',
     }
 
     LISTA_RESULTADOS = {
@@ -445,7 +473,7 @@ if __name__ == "__main__":
         '09-11-25': 'Resultados 09-11-25.xlsx', '30-11-25': 'Resultados 30-11-25.xlsx',
         '14-12-25': 'Resultados 14-12-25.xlsx', '28-12-25': 'Resultados 28-12-25.xlsx',
         '08-02-26': 'Resultados 08-02-26.xlsx', '28-02-26': 'Resultados 28-02-26.xlsx',
-        '08-03-26': 'Resultados 08-03-26.xlsx',
+        '08-03-26': 'Resultados 08-03-26.xlsx', '22-03-26': 'Resultados 22-03-26.xlsx',
     }
     # >>> FIN EDITABLE <<<
 
@@ -466,7 +494,7 @@ if __name__ == "__main__":
             continue
 
         for _, row in df_cab.iterrows():
-            nombre = str(row.get('CABALLO', '')).strip().upper()
+            nombre = re.sub(r'\s+', ' ', str(row.get('CABALLO', ''))).strip().upper()
             e_kg_str = str(row.get('E Kg', '')).strip()
             edad, peso = '', ''
             m = re.match(r'^\D*(\d{1,2})\s+(\d{2,3})\D*$', e_kg_str)
@@ -477,16 +505,18 @@ if __name__ == "__main__":
             if 'debuta' in actu_ext.lower():
                 actu_ext = ''
 
+            texto_ext = str(row.get('TEXTO_ACT_EXT_FINAL', '')).strip()
+
             conn.execute('INSERT OR IGNORE INTO caballos (nombre) VALUES (?)', (nombre,))
             conn.execute('''
                 UPDATE caballos
                 SET padre_madre=?, pelo=?, ultima_edad=?, ultimo_peso=?,
                     ultimo_jockey=?, caballeriza=?, cuidador=?, ultima_actuacion_externa=?,
-                    snapshot_programa_fecha=?
+                    texto_actuaciones_externas=?, snapshot_programa_fecha=?
                 WHERE nombre=?
             ''', (row.get('Padre - Madre', ''), row.get('Pelo', ''), edad, peso,
                   row.get('Jockey-Descargo', ''), row.get('Caballeriza', ''),
-                  row.get('Cuidador', ''), actu_ext, fecha_hoja, nombre))
+                  row.get('Cuidador', ''), actu_ext, texto_ext, fecha_hoja, nombre))
     conn.commit()
     print("--- CABALLOS OK ---")
 

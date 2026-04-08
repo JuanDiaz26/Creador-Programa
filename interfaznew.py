@@ -120,19 +120,57 @@ def obtener_datos_caballo(nombre, db_cab, db_act):
     nombre = nombre.strip().upper()
     try: info = db_cab[db_cab['Caballo'] == nombre].iloc[0].to_dict()
     except: info = {'Caballo': nombre}
-    acts = db_act[db_act['Caballo'] == nombre].sort_values(by='Fecha', ascending=False)
-    cuatro = "Debuta"
-    if not acts.empty:
-        ult = []
-        for p in acts['Puesto Final'].head(4):
-            ps = str(p).strip()
-            if ps.isdigit(): ult.append('0' if int(ps)>=10 else ps)
-            else: ult.append('-')
-        if ult: cuatro = "-".join(reversed(ult))
+    
+    acts = db_act[db_act['Caballo'] == nombre].sort_values(by='Fecha', ascending=True) 
+    
+    # --- 1. Calcular las siglas Locales (Tucumán) en orden cronológico ---
+    ult_locales = []
+    for _, row_act in acts.iterrows():
+        ps = str(row_act['Puesto Final']).strip()
+        tiempo = str(row_act.get('Tiempo Ganador', ''))
+        
+        if ps.isdigit():
+            puesto = int(ps)
+            if puesto >= 10:
+                ult_locales.append('0')
+            elif puesto == 1:
+                # --- MAGIA DEL EXTRAOFICIAL (1e) ---
+                es_extraoficial = False
+                # Si no tiene el apóstrofe de los minutos (ej. 1'13")
+                if "'" not in tiempo:
+                    # Buscamos los segundos antes de la comilla doble (ej. 44")
+                    m_sec = re.search(r"(\d{2})\"", tiempo)
+                    if m_sec:
+                        segundos = int(m_sec.group(1))
+                        # Si los segundos están entre 36 y 50, es de 700 u 800 mts
+                        if 36 <= segundos <= 50:
+                            es_extraoficial = True
+                
+                ult_locales.append('1e' if es_extraoficial else '1')
+                # -----------------------------------
+            else:
+                ult_locales.append(str(puesto))
+        else:
+            ult_locales.append('-')
+            
+    # --- 2. Traer las siglas Externas (Buenos Aires, etc) ---
+    ext_str = str(info.get('ultima_actuacion_externa', '')).strip()
+    ult_externas = [x.strip() for x in ext_str.split('-') if x.strip()] if ext_str and ext_str.lower() != 'nan' else []
+    
+    # --- 3. Combinar todo (Cronológicamente correcto) ---
+    combined_full = ult_externas + ult_locales
+    
+    # --- 4. Aplicar lógica de prolijidad (Máximo 3 más nuevas) ---
+    total_ult = combined_full[-3:] if combined_full else []
+    cuatro = "-".join(total_ult) if total_ult else "Debuta"
+    
+    # Guardamos los datos en el diccionario final
     edad = info.get('Edad', '')
     info['E Kg'] = f"{edad} {info.get('Peso','')}".strip()
     info['4 Ult.'] = cuatro
-    info['actuaciones'] = acts.head(2)
+    info['actuaciones'] = acts.tail(2) # Mostramos las 2 más recientes locales abajo
+    info['texto_act_ext'] = str(info.get('texto_actuaciones_externas', '')).strip()
+    
     return info
 
 def cargar_word_entrada():
@@ -235,20 +273,25 @@ def exportar_pdf(color_mode="digital"):
     if not filepath: return
 
     try:
-        C_VERDE = colors.HexColor("#248689")
-        C_HEAD_BG = C_VERDE if color_mode == "digital" else colors.white
+        # COLORES OFICIALES
+        C_VERDE_OFICIAL = colors.HexColor("#248689")
+        C_VERDE = C_VERDE_OFICIAL
+        C_HEAD_BG = C_VERDE_OFICIAL if color_mode == "digital" else colors.white
         C_HEAD_TXT = colors.white if color_mode == "digital" else colors.black
+        C_NARANJA = colors.HexColor("#ef6c00") 
         
         c = canvas.Canvas(filepath, pagesize=A4)
         W, H = A4; MX = 0.5 * cm; MY = 1.0 * cm
         styles = getSampleStyleSheet()
         
+        # Estilos de Paragraph
         style_cell_center = ParagraphStyle('CellC', parent=styles['Normal'], fontName='Helvetica', fontSize=6.5, leading=7, alignment=TA_CENTER)
         style_cell_left = ParagraphStyle('CellL', parent=styles['Normal'], fontName='Helvetica', fontSize=6.5, leading=7, alignment=TA_LEFT)
         style_cell_right = ParagraphStyle('CellR', parent=styles['Normal'], fontName='Helvetica', fontSize=6.5, leading=7, alignment=TA_RIGHT)
         style_header = ParagraphStyle('HeadC', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=6.5, leading=7, alignment=TA_CENTER)
         style_cond = ParagraphStyle('Cond', parent=styles['Normal'], fontName='Helvetica', fontSize=8, leading=9)
         style_legales = ParagraphStyle('Leg', parent=styles['Normal'], fontName='Helvetica', fontSize=7, leading=8, alignment=TA_JUSTIFY)
+        
         LOGO_MAIN = ASSETS_DIR / "logo.png"; LOGO_WSP = ASSETS_DIR / "whatsapp.png"; LOGO_SOC = ASSETS_DIR / "redes.png"
         
         fecha_txt = entry_fecha.get().strip().upper()
@@ -257,67 +300,117 @@ def exportar_pdf(color_mode="digital"):
 
         def draw_institutional_header():
             y_top_box = H - 1.0*cm; h_top_box = 1.6*cm; w_box = W - 2*MX
-            c.setStrokeColor(C_VERDE); c.setLineWidth(2); c.rect(MX, y_top_box - h_top_box, w_box, h_top_box)
+            c.setStrokeColor(C_VERDE_OFICIAL); c.setLineWidth(2); c.rect(MX, y_top_box - h_top_box, w_box, h_top_box)
             if LOGO_MAIN.exists(): c.drawImage(str(LOGO_MAIN), MX + 0.3*cm, y_top_box - h_top_box + 0.1*cm, width=1.4*cm, height=1.4*cm, mask='auto', preserveAspectRatio=True)
+            
             c.setFillColor(colors.black); c.setFont("Helvetica-BoldOblique", 16)
             c.drawCentredString(MX + w_box/2 + 1.0*cm, y_top_box - 0.7*cm, "HIPÓDROMO DE TUCUMÁN - PROGRAMA OFICIAL")
-            c.setFillColor(colors.darkgrey); c.setFont("Helvetica-Bold", 12)
+            
+            c.setFillColor(C_NARANJA); c.setFont("Helvetica-Bold", 12)
             c.drawCentredString(MX + w_box/2 + 1.0*cm, y_top_box - 1.3*cm, f"REUNION Nº {nro_reunion} - {fecha_txt}")
-            c.setFillColor(colors.black)
-            y_auth = y_top_box - h_top_box - 0.2*cm
-            data_auth = [["PRESIDENTE:", "Dr. Luis Alberto Gamboa", "VOCALES", "DELEGADO HIPODROMO"], ["VICE-PRESIDENTE:", "C.P.N Ernesto José Vidal Sanz", "Juan Ramon Rouges", "Estanislao Perez Garcia"], ["SECRETARIO:", "Ignacio Lopez Bustos", "Marcos Bruchmann", ""], ["", "", "Santiago Allende", ""]]
+            
+            y_auth = y_top_box - h_top_box - 0.15*cm
+            
+            # Estilos de Comisión con Color Oficial y Negrita Real
+            st_tit = ParagraphStyle('tit', fontName='Helvetica-Bold', fontSize=6.5, textColor=C_VERDE_OFICIAL, alignment=TA_CENTER)
+            st_nom = ParagraphStyle('nom', fontName='Helvetica', fontSize=6.5, textColor=colors.black, alignment=TA_LEFT)
+            
+            # MAGIA 1: Reemplacé "" por Paragraph(" ", st_tit) para alinear perfectamente
+            data_auth = [
+                [Paragraph(" ", st_tit), Paragraph("<u>COMISIÓN DE CARRERAS</u>", st_tit), Paragraph("<u>VOCALES</u>", st_tit), Paragraph("<u>DELEGADO HIPODROMO</u>", st_tit)],
+                [Paragraph("PRESIDENTE:", st_tit), Paragraph("Dr. Luis Alberto Gamboa", st_nom), Paragraph("Juan Ramon Rouges", st_nom), Paragraph("Estanislao Perez Garcia", st_nom)], 
+                [Paragraph("VICE-PRESIDENTE:", st_tit), Paragraph("C.P.N Ernesto José Vidal Sanz", st_nom), Paragraph("Marcos Bruchmann", st_nom), ""], 
+                [Paragraph("SECRETARIO:", st_tit), Paragraph("Ignacio Lopez Bustos", st_nom), Paragraph("Santiago Allende", st_nom), ""]
+            ]
             t = Table(data_auth, colWidths=[3.2*cm, 6*cm, 4.5*cm, 6.3*cm])
-            t.setStyle(TableStyle([('FONTNAME', (0,0), (-1,-1), 'Helvetica'), ('FONTSIZE', (0,0), (-1,-1), 6.5), ('FONTNAME', (0,0), (0,-1), 'Helvetica-Bold'), ('FONTNAME', (2,0), (3,0), 'Helvetica-Bold'), ('SPAN', (2,0), (2,0)), ('BOX', (0,0), (-1,-1), 2, C_VERDE), ('TOPPADDING', (0,0), (-1,-1), 1.5), ('BOTTOMPADDING', (0,0), (-1,-1), 0)]))
+            t.setStyle(TableStyle([
+                ('BOX', (0,0), (-1,-1), 2, C_VERDE_OFICIAL), 
+                ('VALIGN', (0,0), (-1,-1), 'MIDDLE'), 
+                ('LEFTPADDING', (0,0), (-1,-1), 1), ('RIGHTPADDING', (0,0), (-1,-1), 1),
+                ('TOPPADDING', (0,0), (-1,-1), 1.5), ('BOTTOMPADDING', (0,0), (-1,-1), 1.5)
+            ]))
             w_t, h_t = t.wrapOn(c, W, H); t.drawOn(c, MX, y_auth - h_t)
-            txt_legal = "Admisión y permanencia: Las autoridades del Hipódromo de Tucumán ejercen la facultad de admisión y permanencia..."
-            y_leg = y_auth - h_t - 0.2*cm; p = Paragraph(txt_legal, style_legales); w_leg, h_leg = p.wrap(w_box - 0.4*cm, 5*cm)
-            c.setStrokeColor(C_VERDE); c.setLineWidth(2); c.rect(MX, y_leg - h_leg - 0.2*cm, w_box, h_leg + 0.4*cm); p.drawOn(c, MX + 0.2*cm, y_leg - h_leg)
-            y_box = y_leg - h_leg - 1.5*cm
-            c.setStrokeColor(C_VERDE); c.setLineWidth(2)
-            c.rect(MX, y_box, 9*cm, 1.0*cm); c.setFillColor(colors.black); c.setFont("Helvetica-BoldOblique", 9)
-            c.drawCentredString(MX + 4.5*cm, y_box + 0.6*cm, "El juego compulsivo es"); c.drawCentredString(MX + 4.5*cm, y_box + 0.2*cm, "perjudicial para la salud.")
-            c.rect(W - MX - 9.5*cm, y_box, 9.5*cm, 1.0*cm)
-            c.drawCentredString(W - MX - 4.75*cm, y_box + 0.6*cm, "Los retirados en las apuestas combinadas"); c.drawCentredString(W - MX - 4.75*cm, y_box + 0.2*cm, "(encadenadas), pasan al favorito.")
-            return (y_box - 0.5*cm)
+            
+            txt_legal = "Admisión y permanencia: Las autoridades del Hipódromo de Tucumán ejercen la facultad de admisión y permanencia en las instalaciones del Hipódromo durante el desarrollo de la reunión hípica. Los profesionales y el público asistente se someten a las disposiciones del Reglamento General de Carreras y a las resoluciones de la Honorable Comisión de Carreras, cuyos fallos son inapelables. Los Boletos no cobrados solo se pagarán, los días de carreras de Tucumán y en el horario en que se desarrolle la reunión y tendrán validez, hasta 2 reuniones siguientes.-"
+            y_leg = y_auth - h_t - 0.15*cm
+            p = Paragraph(txt_legal, style_legales); w_leg, h_leg = p.wrap(w_box - 0.4*cm, 5*cm)
+            c.setStrokeColor(C_VERDE_OFICIAL); c.setLineWidth(2)
+            c.rect(MX, y_leg - h_leg - 0.2*cm, w_box, h_leg + 0.4*cm); p.drawOn(c, MX + 0.2*cm, y_leg - h_leg)
+            
+            y_box = y_leg - h_leg - 1.4*cm; h_warn = 1.1*cm
+            c.setStrokeColor(C_VERDE_OFICIAL); c.setLineWidth(2)
+            c.rect(MX, y_box, 9.2*cm, h_warn)
+            c.setFillColor(colors.black); c.setFont("Helvetica-BoldOblique", 9)
+            c.drawCentredString(MX + 4.6*cm, y_box + 0.65*cm, "El juego compulsivo es")
+            c.drawCentredString(MX + 4.6*cm, y_box + 0.25*cm, "perjudicial para la salud.")
+            
+            c.rect(W - MX - 9.5*cm, y_box, 9.5*cm, h_warn)
+            c.drawCentredString(W - MX - 4.75*cm, y_box + 0.65*cm, "Los retirados en las apuestas")
+            c.drawCentredString(W - MX - 4.75*cm, y_box + 0.25*cm, "combinadas pasan al favorito.")
+            
+            return (y_box - 0.3*cm)
 
         def draw_race(carrera, x, y_start, width, idx_carrera):
             cab = carrera['cabecera']; h_head = 1.3*cm
             c.setFillColor(C_HEAD_BG); c.setStrokeColor(colors.black); c.setLineWidth(1)
             c.rect(x, y_start - h_head, width, h_head, fill=(color_mode=="digital"))
-            c.setFillColor(C_HEAD_TXT); c.setFont("Helvetica-Bold", 14)
-            c.drawString(x + 2*mm, y_start - 7.0*mm, f"{cab['nro_carrera']}º Carrera")
-            clean_premio = _clean_str(cab['premio']); 
+            
+            c.setFillColor(C_HEAD_TXT); c.setFont("Helvetica-Bold", 17)
+            c.drawString(x + 2*mm, y_start - 7.5*mm, f"{cab['nro_carrera']}º Carrera")
+            clean_horario = _clean_str(cab['horario']).replace("Hs.", "")
+            c.drawRightString(x + width - 2*mm, y_start - 7.5*mm, f"{clean_horario} Hs.")
+            
+            clean_premio = _clean_str(cab['premio']) 
             if clean_premio.upper().startswith("PREMIO"): clean_premio = clean_premio[6:].strip()
-            c.setFont("Helvetica-Bold", 15); c.drawCentredString(x + width/2, y_start - 7.0*mm, f"PREMIO \"{clean_premio.upper()}\"")
-            clean_horario = _clean_str(cab['horario']).replace("Hs.", ""); c.setFont("Helvetica-Bold", 14); c.drawRightString(x + width - 2*mm, y_start - 7.0*mm, f"{clean_horario} Hs.")
+            c.setFont("Helvetica-Bold", 15)
+            c.drawCentredString(x + width/2, y_start - 7.0*mm, f"PREMIO \"{clean_premio.upper()}\"")
+            
             c.setFont("Helvetica-Bold", 8); full_dist = f"{cab['distancia']}"; dist_val = cab['distancia'].split()[0].replace('.','')
             if dist_val in RECORDS: full_dist = RECORDS[dist_val]
             c.drawCentredString(x + width/2, y_start - 11.5*mm, full_dist)
-            clean_cond = cab['condicion'].replace("PREMIOS:", "").strip().replace("|", "<br/>")
-            p = Paragraph(clean_cond, style_cond); w_cond = width; h_cond = p.wrap(w_cond, 3*cm)[1]
-            y_curr = y_start - h_head - 1*mm; p.drawOn(c, x, y_curr - h_cond); y_curr -= (h_cond + 1*mm); y_curr -= 1*mm 
+            
+            # CONDICIÓN Saneada (sin |)
+            clean_cond = cab['condicion'].replace("PREMIOS:", "").replace("|", " ").strip()
+            p = Paragraph(clean_cond, style_cond)
+            w_cond, h_cond = p.wrap(width, 3*cm) 
+            y_curr = y_start - h_head - 2*mm
+            p.drawOn(c, x, y_curr - h_cond)
+            y_curr -= (h_cond + 4*mm) 
+            
+            y_top_caja_amarilla = y_curr + 2*mm 
+            
             txt_premios = cab['premios_dinero'].replace("Premios:", "").strip()
             if "Premios:" in txt_premios: txt_premios = txt_premios.replace("Premios:", "")
-            c.setFillColor(colors.black); c.setFont("Helvetica-Bold", 7.5); c.drawString(x, y_curr, txt_premios) 
-
-            txt_ap = cab['apuesta']; txt_inc = cab['incremento']; detalle_ap = cab['incremento_2']
+            c.setFillColor(colors.black); c.setFont("Helvetica-Bold", 7.5)
+            c.drawString(x, y_curr - 3*mm, txt_premios) 
+            y_curr -= 3*mm 
+            
+            detalle_ap = cab['incremento_2']
+            if detalle_ap: 
+                c.setFont("Helvetica-Bold", 7); c.drawString(x, y_curr - 4*mm, detalle_ap.strip()); y_curr -= 4*mm
+            
+            bottom_left = y_curr
+            txt_ap = cab['apuesta']; txt_inc = cab['incremento']
+            box_w = 5.2*cm; box_x = x + width - box_w; box_h = 0.9*cm; center_box = box_x + (box_w/2)
+            
             if txt_ap or txt_inc:
-                box_w = 6.2*cm; box_x = x + width - box_w; box_h = 8*mm; center_box = box_x + (box_w/2)
                 if color_mode == "digital":
                     c.setFillColor(colors.lightyellow); c.setStrokeColor(colors.gold)
-                    c.rect(box_x, y_curr - 4*mm, box_w, box_h, fill=1, stroke=1); c.setFillColor(colors.black)
+                    c.rect(box_x, y_top_caja_amarilla - box_h, box_w, box_h, fill=1, stroke=1)
+                    c.setFillColor(colors.black)
                 c.setFont("Helvetica-BoldOblique", 9)
-                if txt_ap: c.drawCentredString(center_box, y_curr + 0.5*mm, txt_ap)
+                if txt_ap: c.drawCentredString(center_box, y_top_caja_amarilla - 4*mm, txt_ap)
                 inc_val = _parse_money(cab['incremento'])
                 if inc_val > 0: 
                     txt_inc_show = f"INCREMENTO: $ {inc_val:,.0f}".replace(",",".")
-                    c.setFont("Helvetica-BoldOblique", 9); c.drawCentredString(center_box, y_curr - 3.5*mm, txt_inc_show)
-                y_curr -= 4*mm 
-                if detalle_ap: c.setFont("Helvetica-Bold", 7); c.drawString(x, y_curr - 1*mm, detalle_ap)
-            else: y_curr -= 2*mm 
-
-            h_info_block = h_head + h_cond + 1.2*cm 
-            col_ws = [1.3*cm, 0.7*cm, 4.0*cm, 1.2*cm, 2.6*cm, 1.1*cm, 4.0*cm, 2.5*cm, 2.6*cm]
+                    c.drawCentredString(center_box, y_top_caja_amarilla - 7.5*mm, txt_inc_show)
+                    
+            bottom_right = y_top_caja_amarilla - box_h
+            y_curr = min(bottom_left, bottom_right) - 2*mm 
+            h_info_block = (y_start - y_curr)
+            
+            # TABLA DE CABALLOS
+            col_ws = [1.3*cm, 0.6*cm, 3.6*cm, 1.0*cm, 2.6*cm, 0.9*cm, 4.0*cm, 3.4*cm, 2.6*cm]
             headers_raw = ['4 Ult.', 'Nº', 'Caballo', 'Pelo', 'Jockey', 'E Kg', 'Padre-Madre', 'Caballeriza', 'Cuidador']
             headers_para = [Paragraph(h, style_header) for h in headers_raw]
             data = [headers_para]
@@ -333,12 +426,11 @@ def exportar_pdf(color_mode="digital"):
                 pelo = Paragraph(str(row[3]), style_cell_center); ekg = Paragraph(str(row[5]), style_cell_center)
                 data.append([ult, nro, caballo, pelo, jockey, ekg, pm, caballeriza, cuidador])
             t = Table(data, colWidths=col_ws, rowHeights=[0.55*cm] * len(data))
+            
             ts = [('GRID', (0,0), (-1,-1), 0.5, colors.black), ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
                 ('VALIGN', (0,0), (-1,-1), 'MIDDLE'), ('ALIGN', (0,0), (-1,-1), 'CENTER'),
                 ('LEFTPADDING', (0,0), (-1,-1), 1), ('RIGHTPADDING', (0,0), (-1,-1), 1),
-                ('LEFTPADDING', (3,0), (3,-1), 0.5), ('RIGHTPADDING', (3,0), (3,-1), 0.5), # Pelo compact
-                ('LEFTPADDING', (5,0), (5,-1), 0.5), ('RIGHTPADDING', (5,0), (5,-1), 0.5), # E Kg compact
-                ('TOPPADDING', (0,0), (-1,-1), 0.5), ('BOTTOMPADDING', (0,0), (-1,-1), 0.5),
+                ('LEFTPADDING', (2,0), (2,-1), 4), ('TOPPADDING', (0,0), (-1,-1), 0.5), ('BOTTOMPADDING', (0,0), (-1,-1), 0.5),
                 ('ROWBACKGROUNDS', (1,0), (-1,-1), [colors.white])]
             for i, row in enumerate(carrera['tabla_caballos']):
                 ridx = i + 1; nro_raw = str(row[1]); key_mandil = "".join(filter(str.isdigit, nro_raw))
@@ -346,13 +438,35 @@ def exportar_pdf(color_mode="digital"):
                 bg_hex, _ = MANDILES.get(key_mandil, MANDILES['default']) 
                 if color_mode == "print": bg_hex = "#ffffff"
                 ts.append(('BACKGROUND', (1, ridx), (1, ridx), colors.HexColor(bg_hex)))
-            t.setStyle(TableStyle(ts)); w_t, h_t = t.wrapOn(c, width, H); y_curr -= (1*mm + h_t); t.drawOn(c, x, y_curr)
+            t.setStyle(TableStyle(ts))
+            w_t, h_t = t.wrapOn(c, width, H)
+            y_curr -= h_t 
+            t.drawOn(c, x, y_curr)
             
-            lines_act = carrera['actuaciones'].split('\n'); count_lines = sum(1 for l in lines_act if l.strip())
-            h_acts = (count_lines * 0.5*cm) + 0.3*cm # Compacted font size/leading
-            y_act = y_curr - 1*mm
-            c.setFillColor(colors.whitesmoke); c.setStrokeColor(colors.lightgrey); c.rect(x, y_act - h_acts, width, h_acts, fill=1, stroke=1)
-            curr_y_txt = y_act - 3.5*mm
+            # MAGIA 2: Respiro de solo 1mm con la tabla de arriba (antes 4mm)
+            y_act = y_curr - 1*mm 
+            
+            # --- ÚLTIMAS ACTUACIONES CALIBRADAS (Matemática Pura) ---
+            lines_act = carrera['actuaciones'].split('\n')
+            count_lines = sum(1 for l in lines_act if l.strip())
+            h_row_exacto = 5.5*mm # Salto exacto por renglón
+            h_padding_total = 2*mm # Aire total (arriba+abajo) dentro de la caja gris
+            
+            h_acts = (count_lines * h_row_exacto) + h_padding_total 
+            
+            c.setFillColor(colors.whitesmoke); c.setStrokeColor(colors.lightgrey)
+            c.rect(x, y_act - h_acts, width, h_acts, fill=1, stroke=1)
+            
+            tiene_derecha = any("||" in l for l in lines_act if l.strip())
+            if tiene_derecha:
+                c.setStrokeColor(C_VERDE_OFICIAL); c.setLineWidth(1.5)
+                # Línea central contínua perfecta
+                c.line(x + width/2, y_act - 1*mm, x + width/2, y_act - h_acts + 1*mm)
+            
+            # MAGIA 3 y 4: Sincronización de todas las filas. Todas miden y saltan 5.5mm
+            # Empezamos el primer renglón a 1mm exacto del techo (la mitad del padding total)
+            curr_y_txt = y_act - 1*mm 
+            
             for l in lines_act:
                 if not l.strip(): continue
                 m = re.match(r'^(\d+[a-zA-Z]?)\s*[-\s]+(.*)', l)
@@ -360,19 +474,28 @@ def exportar_pdf(color_mode="digital"):
                     nro_raw, resto = m.groups(); key_mandil = "".join(filter(str.isdigit, nro_raw)) 
                     bg_hex, fg_hex = MANDILES.get(key_mandil, MANDILES['default'])
                     if color_mode == "print": bg_hex, fg_hex = "#ffffff", "#000000"
+                    
                     c.setFillColor(colors.HexColor(bg_hex)); c.setStrokeColor(colors.black)
-                    c.circle(x + 3*mm, curr_y_txt - 1.2*mm, 2.2*mm, fill=1, stroke=1)
-                    c.setFillColor(colors.HexColor(fg_hex)); c.setFont("Helvetica-Bold", 6)
-                    c.drawCentredString(x + 3*mm, curr_y_txt - 2.0*mm, nro_raw)
-                    c.setFillColor(colors.black); c.setFont("Helvetica", 6)
+                    c.circle(x + 3.5*mm, curr_y_txt - 1.2*mm, 2.1*mm, fill=1, stroke=1) # Círculo un pelín más grande (2.1)
+                    c.setFillColor(colors.HexColor(fg_hex)); c.setFont("Helvetica-Bold", 6.5)
+                    c.drawCentredString(x + 3.5*mm, curr_y_txt - 2.5*mm, nro_raw)
+                    
+                    c.setFillColor(colors.black); c.setFont("Helvetica", 6.5) 
                     parts = resto.split("||"); izq = parts[0].strip(); der = parts[1].strip() if len(parts)>1 else ""
-                    c.drawString(x + 7*mm, curr_y_txt - 2.0*mm, izq)
-                    if der: c.drawCentredString(x + width/2, curr_y_txt - 2.0*mm, "||"); c.drawString(x + width/2 + 3*mm, curr_y_txt - 2.0*mm, der)
-                else: c.setFillColor(colors.black); c.setFont("Helvetica", 6); c.drawString(x + 2*mm, curr_y_txt - 2.0*mm, l)
-                curr_y_txt -= 5*mm 
+                    c.drawString(x + 8*mm, curr_y_txt - 2.5*mm, izq)
+                    if der: c.drawString(x + width/2 + 3*mm, curr_y_txt - 2.5*mm, der)
+                else: 
+                    c.setFillColor(colors.black); c.setFont("Helvetica", 6.5)
+                    c.drawString(x + 2*mm, curr_y_txt - 2.5*mm, l)
+                
+                c.setStrokeColor(colors.lightgrey); c.setLineWidth(0.5)
+                c.line(x + 1*mm, curr_y_txt - 4.5*mm, x + width - 1*mm, curr_y_txt - 4.5*mm)
+                
+                curr_y_txt -= h_row_exacto # Salto exacto y uniforme
+                
             return (h_info_block + h_t + h_acts + 0.8*cm)
 
-        y_cursor = draw_institutional_header(); total_inc = 0; data_footer = [["RESUMEN DE APUESTAS DE LA JORNADA"]]
+        y_cursor = draw_institutional_header(); total_inc = 0; data_footer = []
         for i, car in enumerate(programa_completo):
             cab = car['cabecera']; monto1 = _parse_money(cab['incremento'])
             if monto1 > 0:
@@ -389,27 +512,43 @@ def exportar_pdf(color_mode="digital"):
                 if rango == 1: c_str = f"{nro_start}º carrera"
                 else: c_str = f"{nro_start}º y {end_nro}º carrera" if rango==2 else f"{nro_start}º a {end_nro}º carrera"
                 data_footer.append([f"{nom_ap}: $ {monto1:,.0f}".replace(",",".") + f" ({c_str})"])
-            monto2 = _parse_money(cab['incremento_2']); 
-            if monto2 > 1000: total_inc += monto2
 
         def draw_footer_area(y_pos):
-            fmt_tot = f"{total_inc:,.0f}".replace(",", "."); data_footer.append([f"TOTAL INCREMENTOS Y POZOS: $ {fmt_tot}"])
-            tf = Table(data_footer, colWidths=[17*cm]) # Ancho total pagina
-            ts_f = [('BOX', (0,0), (-1,-1), 1.5, colors.black), ('BACKGROUND', (0,0), (0,0), C_VERDE), ('TEXTCOLOR', (0,0), (0,0), colors.white),
-                ('ALIGN', (0,0), (-1,-1), 'CENTER'), ('FONTNAME', (0,0), (0,0), 'Helvetica-Bold'), ('FONTSIZE', (0,0), (0,0), 11),
-                ('BOTTOMPADDING', (0,0), (0,0), 8), ('FONTNAME', (0,1), (-1,-1), 'Helvetica-BoldOblique'), ('FONTSIZE', (0,1), (-1,-1), 9),
-                ('TEXTCOLOR', (0,-1), (0,-1), colors.darkblue), ('FONTSIZE', (0,-1), (0,-1), 12), ('ROWBACKGROUNDS', (1,0), (-2,-1), [colors.whitesmoke, colors.white])]
-            tf.setStyle(TableStyle(ts_f)); w_f, h_f = tf.wrapOn(c, W, H); tf.drawOn(c, (W - 17*cm)/2, y_pos)
+            fmt_tot = f"{total_inc:,.0f}".replace(",", ".")
+            final_data = [[f"TOTAL INCREMENTOS Y POZOS: $ {fmt_tot}"]] + data_footer
+            
+            # MAGIA 5: Cuadro de resumen más grande (18.5cm) y con más padding (4)
+            width_foot = 18.5*cm
+            tf = Table(final_data, colWidths=[width_foot])
+            ts_f = [
+                ('BOX', (0,0), (-1,-1), 1, colors.darkgrey),
+                ('BACKGROUND', (0,0), (0,0), colors.HexColor("#1f2937")), 
+                ('TEXTCOLOR', (0,0), (0,0), colors.white),
+                ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+                ('FONTNAME', (0,0), (0,0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0,0), (0,0), 10), 
+                ('BOTTOMPADDING', (0,0), (0,0), 4), ('TOPPADDING', (0,0), (0,0), 4), # Más aire
+                ('FONTNAME', (0,1), (-1,-1), 'Helvetica-BoldOblique'),
+                ('FONTSIZE', (0,1), (-1,-1), 8),
+                ('BOTTOMPADDING', (0,1), (-1,-1), 2), ('TOPPADDING', (0,1), (-1,-1), 2), # Más aire
+                ('ROWBACKGROUNDS', (1,0), (-1,-1), [colors.white, colors.whitesmoke])
+            ]
+            tf.setStyle(TableStyle(ts_f))
+            w_f, h_f = tf.wrapOn(c, W, H)
+            
+            y_draw = MY + 1.2*cm 
+            tf.drawOn(c, (W - width_foot)/2, y_draw) # Centrado perfecto
+            
             y_img = 0.5*cm 
             if LOGO_WSP.exists(): c.drawImage(str(LOGO_WSP), MX, y_img, width=4.5*cm, height=1.3*cm, mask='auto', preserveAspectRatio=True)
             if LOGO_SOC.exists(): c.drawImage(str(LOGO_SOC), W - MX - 4.5*cm, y_img, width=4.5*cm, height=1.3*cm, mask='auto', preserveAspectRatio=True)
-            return h_f + 1.0*cm
+            return h_f + 1.5*cm
 
         if len(programa_completo) > 0: h_used = draw_race(programa_completo[0], MX, y_cursor, W - 2*MX, 1); y_cursor -= h_used
         draw_footer_area(MY + 1.0*cm); c.showPage(); y_cursor = H - MY
         for i, car in enumerate(programa_completo[1:], start=2):
             filas_cab = len(car['tabla_caballos']); lines_act = sum(1 for l in car['actuaciones'].split('\n') if l.strip())
-            h_est = 3.0*cm + (filas_cab * 0.55*cm) + (lines_act * 0.5*cm) + 0.5*cm # Estimacion ajustada para meter 2
+            h_est = 3.0*cm + (filas_cab * 0.55*cm) + (lines_act * 0.55*cm) + 1.0*cm
             if y_cursor - h_est < MY: c.showPage(); y_cursor = H - MY
             h_used = draw_race(car, MX, y_cursor, W - 2*MX, i); y_cursor -= (h_used + 0.3*cm)
         c.save(); messagebox.showinfo("PDF Creado", f"Archivo generado: {filepath}")
@@ -534,20 +673,50 @@ def generar_programa_en_tabla():
         datos['Jockey-Descargo'] = ""; datos['Nº'] = nro; datos['Caballo'] = nombre.upper()
         tabla_programa.insert('', tk.END, values=[datos.get(c, '') for c in ['4 Ult.','Nº','Caballo','Pelo','Jockey-Descargo','E Kg','Padre - Madre','Caballeriza','Cuidador']])
         
-        acts = datos.get('actuaciones'); lineas = []
-        if acts is None or acts.empty: lineas.append("Debutante")
-        else:
+        acts = datos.get('actuaciones')
+        lineas_locales = []
+        
+        # --- 1. Armamos los textos Locales ---
+        if acts is not None and not acts.empty:
             for _, a in acts.iterrows():
                 f_fmt = a['Fecha'].strftime('%d/%m/%y') if pd.notna(a['Fecha']) else ''
-                if str(a['Puesto Final']).strip().upper() == 'NC': lineas.append(f"{f_fmt} - No Corrió."); continue
-                jk_full = str(a.get('Jockey','')); jk = f"{jk_full.split()[1][:1]}. {jk_full.split()[0]}" if len(jk_full.split())>1 else jk_full
-                dist_txt = " (Dist.)" if str(a.get('Puesto Original')) != str(a.get('Puesto Final')) else ""; pista = a.get('Pista', 'PN'); 
+                if str(a['Puesto Final']).strip().upper() == 'NC': 
+                    lineas_locales.append(f"{f_fmt} - No Corrió.")
+                    continue
+                jk_full = str(a.get('Jockey',''))
+                jk = f"{jk_full.split()[1][:1]}. {jk_full.split()[0]}" if len(jk_full.split())>1 else jk_full
+                dist_txt = " (Dist.)" if str(a.get('Puesto Original')) != str(a.get('Puesto Final')) else ""
+                pista = a.get('Pista', 'PN')
                 if not pista: pista = 'PN'
+                
                 if str(a.get('Puesto Original')).strip() in ['1','1.0']:
-                    margen = formatear_cuerpos(a.get('Margen','')); lineas.append(f"{f_fmt} - {jk} - 1º gan x {margen} a {str(a.get('Segundo','')).title()} - {a.get('Tiempo Ganador','')}{dist_txt} - {pista}")
+                    margen = formatear_cuerpos(a.get('Margen',''))
+                    lineas_locales.append(f"{f_fmt} - {jk} - 1º gan x {margen} a {str(a.get('Segundo','')).title()} - {a.get('Tiempo Ganador','')}{dist_txt} - {pista}")
                 else:
-                    cuerpos = formatear_cuerpos(a.get('Cuerpos al Ganador','')); lineas.append(f"{f_fmt} - {jk} - {a.get('Puesto Original')}º a {cuerpos} de {str(a.get('Ganador','')).title()} - {a.get('Tiempo Ganador','')}{dist_txt} - {pista}")
-        bloque = "   ||   ".join(reversed(lineas)); text_actuaciones.insert(tk.END, f"{nro}  {bloque}\n")
+                    cuerpos = formatear_cuerpos(a.get('Cuerpos al Ganador',''))
+                    lineas_locales.append(f"{f_fmt} - {jk} - {a.get('Puesto Original')}º a {cuerpos} de {str(a.get('Ganador','')).title()} - {a.get('Tiempo Ganador','')}{dist_txt} - {pista}")
+
+        # --- 2. Traemos los textos Externos ---
+        texto_ext = datos.get('texto_act_ext', '')
+        lineas_ext = [l.strip() for l in texto_ext.split('\n') if l.strip() and l.strip().lower() != 'nan']
+        
+        # OJO ACÁ: Ya no usamos reverse() en las de afuera, ni al final.
+        # Simplemente sumamos la lista de afuera con la de Tucumán.
+        # Como Tucumán ya viene ordenada cronológicamente (vieja a nueva) desde obtener_datos_caballo,
+        # al sumar [viejas_afuera] + [locales_Tucuman], quedan en el orden perfecto.
+        
+        todas_las_lineas = lineas_ext + lineas_locales
+        
+        # Nos quedamos con las 2 más recientes (que ahora están al final de la lista)
+        todas_las_lineas = todas_las_lineas[-2:] if todas_las_lineas else []
+        
+        if not todas_las_lineas:
+            bloque = "Debutante"
+        else:
+            # Las unimos en el orden en el que están (vieja izquierda || nueva derecha)
+            bloque = "   ||   ".join(todas_las_lineas)
+            
+        text_actuaciones.insert(tk.END, f"{nro}  {bloque}\n")
 
 def obtener_datos_formulario():
     rows = [tabla_programa.item(i)['values'] for i in tabla_programa.get_children()]
