@@ -160,8 +160,18 @@ def obtener_datos_caballo(nombre, db_cab, db_act):
     # --- 3. Combinar todo (Cronológicamente correcto) ---
     combined_full = ult_externas + ult_locales
     
-    # --- 4. Aplicar lógica de prolijidad (Máximo 3 más nuevas) ---
-    total_ult = combined_full[-3:] if combined_full else []
+    # --- 4. Aplicar lógica de prolijidad (Máximo 3 o 4) ---
+    # Tomamos las últimas 4 por defecto
+    total_ult = combined_full[-4:] if combined_full else []
+    
+    # Verificamos si en esas 4 hay siglas de afuera (letras que NO sean la 'e' de extraoficial)
+    # Por ejemplo, si detecta 'P' o 'LP', tiene_afuera será True. Si solo hay '1e' o números, será False.
+    tiene_afuera = any(c.isalpha() and c.lower() != 'e' for act in total_ult for c in act)
+    
+    # Si detecta que hay actuaciones de afuera en ese grupo, lo recorta a las 3 más nuevas
+    if tiene_afuera:
+        total_ult = combined_full[-3:] if combined_full else []
+        
     cuatro = "-".join(total_ult) if total_ult else "Debuta"
     
     # Guardamos los datos en el diccionario final
