@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.claude/
+*.spec
+tu_base_de_datos.db
+rechazos_programa.csv
+prueba.py

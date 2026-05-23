@@ -43,7 +43,7 @@ def _resolver_archivo(nombre: str) -> str | None:
     return None
 
 # Debug de filas rechazadas (del PROGRAMA)
-DEBUG = True
+DEBUG = False
 DEBUG_RECHAZOS_FILE = str((BASE_DIR / 'rechazos_programa.csv').resolve())
 
 # =========================================================
@@ -457,7 +457,8 @@ if __name__ == "__main__":
         '05-10-25': '05 DE OCTUBRE DE 2025.xlsx', '18-10-25': '18 DE OCTUBRE DE 2025.xlsx', '09-11-25': '09 DE NOVIEMBRE DE 2025.xlsx',
         '30-11-25': '30 DE NOVIEMBRE DE 2025.xlsx','14-12-25': '14 DE DICIEMBRE DE 2025.xlsx','28-12-25': '28 DE DICIEMBRE DE 2025.xlsx',
         '08-02-26': '8 DE FEBRERO DE 2026.xlsx', '28-02-26': '28 DE FEBRERO DE 2026.xlsx', '08-03-26': '08 DE MARZO DE 2026.xlsx',
-        '22-03-26': '22 DE MARZO DE 2026.xlsx',
+        '22-03-26': '22 DE MARZO DE 2026.xlsx', '12-04-26': '12 DE ABRIL DE 2026.xlsx', '26-04-26': '26 DE ABRIL DE 2026.xlsx',
+        '10-05-26': '10 DE MAYO DE 2026.xlsx',
     }
 
     LISTA_RESULTADOS = {
@@ -474,6 +475,8 @@ if __name__ == "__main__":
         '14-12-25': 'Resultados 14-12-25.xlsx', '28-12-25': 'Resultados 28-12-25.xlsx',
         '08-02-26': 'Resultados 08-02-26.xlsx', '28-02-26': 'Resultados 28-02-26.xlsx',
         '08-03-26': 'Resultados 08-03-26.xlsx', '22-03-26': 'Resultados 22-03-26.xlsx',
+        '12-04-26': 'Resultados 12-04-26.xlsx', '26-04-26': 'Resultados 26-04-26.xlsx',
+        '10-05-26': 'Resultados 10-05-26.xlsx',
     }
     # >>> FIN EDITABLE <<<
 
