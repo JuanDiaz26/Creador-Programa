@@ -37,6 +37,7 @@ PROGRAMAS_DIR = BASE_DIR / "programas"; RESULTADOS_DIR = BASE_DIR / "resultados"
 DATA_DIR.mkdir(exist_ok=True); ASSETS_DIR.mkdir(exist_ok=True)
 PROGRAMAS_DIR.mkdir(exist_ok=True); RESULTADOS_DIR.mkdir(exist_ok=True)
 DB_PATH = DATA_DIR / "carreras.db"; NOMBRE_BD = str(DB_PATH)
+REGISTRO_PATH = DATA_DIR / "cargas_registro.json"
 
 programa_completo = [] 
 indice_edicion = None 
@@ -47,7 +48,7 @@ entry_fecha = None; entry_nro_reunion = None; entry_nro_carrera = None; entry_ho
 entry_distancia = None; entry_condicion = None; entry_premios_dinero = None; entry_apuesta = None
 entry_incremento = None; entry_incremento_2 = None; combo_word = None; combo_dist = None
 text_caballos = None; text_kilos = None; text_actuaciones = None; tabla_programa = None; lista_carreras = None
-contador_carreras = None; btn_accion = None
+contador_carreras = None; btn_accion = None; estado_db_var = None
 
 # --- COLORES OFICIALES MANDILES ---
 MANDILES = {
@@ -94,6 +95,63 @@ def formatear_cuerpos(valor):
         else: res = str(s)
         return f"{res} cp"
     except: return s
+
+def _leer_registro():
+    if not REGISTRO_PATH.exists():
+        return {"programas": {}, "resultados": {}}
+    try:
+        with open(REGISTRO_PATH, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except: return {"programas": {}, "resultados": {}}
+
+def _guardar_en_registro(tipo, fecha, nombre_archivo):
+    reg = _leer_registro()
+    reg[tipo][fecha] = nombre_archivo
+    with open(REGISTRO_PATH, 'w', encoding='utf-8') as f:
+        json.dump(reg, f, ensure_ascii=False, indent=2)
+
+PREFS_PATH = DATA_DIR / "preferencias.json"
+
+def _leer_prefs():
+    if not PREFS_PATH.exists(): return {}
+    try:
+        with open(PREFS_PATH, 'r', encoding='utf-8') as f: return json.load(f)
+    except: return {}
+
+def _guardar_prefs(updates: dict):
+    prefs = _leer_prefs()
+    prefs.update(updates)
+    with open(PREFS_PATH, 'w', encoding='utf-8') as f:
+        json.dump(prefs, f, ensure_ascii=False, indent=2)
+
+def _leer_estado_db():
+    try:
+        conn = sqlite3.connect(NOMBRE_BD); c = conn.cursor()
+        # Parsear fechas DD-MM-YY correctamente (MAX() de texto falla con este formato)
+        rows = c.execute('SELECT DISTINCT snapshot_programa_fecha FROM caballos WHERE snapshot_programa_fecha IS NOT NULL').fetchall()
+        res  = c.execute('SELECT MAX(fecha) FROM actuaciones').fetchone()[0]
+        conn.close()
+        prog_fmt = 'N/D'
+        if rows:
+            fechas = []
+            for (d,) in rows:
+                try: fechas.append(datetime.strptime(d, '%d-%m-%y'))
+                except: pass
+            if fechas:
+                prog_fmt = max(fechas).strftime('%d/%m/%y')
+        if res:
+            try:
+                dt = datetime.fromisoformat(str(res).split()[0])
+                res_fmt = dt.strftime('%d/%m/%y')
+            except: res_fmt = str(res)[:10]
+        else: res_fmt = 'N/D'
+        return f"Programa: {prog_fmt}  |  Resultados: {res_fmt}"
+    except: return "Sin datos en DB"
+
+def _actualizar_estado_db():
+    global estado_db_var
+    if estado_db_var is not None:
+        estado_db_var.set(_leer_estado_db())
 
 def _inicializar_db_si_no_existe():
     conn = sqlite3.connect(NOMBRE_BD); c = conn.cursor()
@@ -155,17 +213,21 @@ def obtener_datos_caballo(nombre, db_cab, db_act):
     ext_str = str(info.get('ultima_actuacion_externa', '')).strip()
     ult_brutas = [x.strip() for x in ext_str.split('-') if x.strip()] if ext_str and ext_str.lower() != 'nan' else []
     
-    # APLICAMOS TU LÓGICA: Filtramos para quedarnos SOLO con las de afuera
+    # Separamos: externas (con letras como P, LP) y locales viejas (solo números, antes del período de BD)
     ult_externas = []
+    ult_old_local = []
     for act in ult_brutas:
-        # Si la sigla tiene letras (ej: P, SI, LP) y no es solo la 'e' de extraoficial, es de afuera.
-        es_de_afuera = any(c.isalpha() and c.lower() != 'e' for c in act)
-        if es_de_afuera:
+        if any(c.isalpha() and c.lower() != 'e' for c in act):
             ult_externas.append(act)
-            
-    # --- 3. Combinar todo (Seguro y sin duplicados) ---
-    # Como ya limpiamos las locales viejas, pegamos las de afuera con las frescas de la BD
-    combined_full = ult_externas + ult_locales
+        else:
+            ult_old_local.append(act)
+
+    # Si el último resultado viejo coincide con el primero de la BD, es duplicado → lo sacamos
+    if ult_old_local and ult_locales and ult_old_local[-1] == ult_locales[0]:
+        ult_old_local = ult_old_local[:-1]
+
+    # --- 3. Combinar: externas + locales viejas (pre-BD) + locales BD ---
+    combined_full = ult_externas + ult_old_local + ult_locales
     
     # --- 4. Aplicar lógica de prolijidad (Máximo 3 o 4) ---
     # Tomamos las últimas 4 por defecto
@@ -200,6 +262,27 @@ def cargar_word_entrada():
     except Exception as ex:
         messagebox.showerror("Error al leer Word", f"No se pudo abrir el archivo.\n\n{ex}"); return
     
+    # Detectar fecha de reunión desde el Word
+    _MESES_WORD = {'ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO',
+                   'JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'}
+    _pat_fecha_word = re.compile(
+        r'(?:LUNES|MARTES|MI[EÉ]RCOLES|JUEVES|VIERNES|S[AÁ]BADO|DOMINGO)\s+(\d{1,2})\s+DE\s+(\w+)\s+DE\s+(\d{4})',
+        re.IGNORECASE | re.UNICODE)
+    for _para in doc.paragraphs:
+        _m = _pat_fecha_word.search(_para.text.upper())
+        if _m:
+            _dia, _mes, _anio = _m.group(1), _m.group(2).upper(), _m.group(3)
+            if _mes in _MESES_WORD:
+                entry_fecha.delete(0, tk.END)
+                entry_fecha.insert(0, f"{int(_dia):02d} DE {_mes} DE {_anio}")
+                break
+
+    # Auto-incrementar número de reunión
+    _ultima_reunion = _leer_prefs().get("ultima_reunion", 0)
+    if _ultima_reunion:
+        entry_nro_reunion.delete(0, tk.END)
+        entry_nro_reunion.insert(0, str(_ultima_reunion + 1))
+
     global DATOS_WORD_CACHED; DATOS_WORD_CACHED = []; curr = {}; capturing = False
     KEYWORDS = ("TURNO", "CLASICO", "CLÁSICO", "ESPECIAL", "HANDICAP", "GRAN PREMIO")
     for para in doc.paragraphs:
@@ -663,6 +746,8 @@ def exportar_programa_excel():
     fecha_txt = (entry_fecha.get().strip() if entry_fecha and entry_fecha.get().strip()
                  else date.today().strftime("%d DE %B DE %Y").upper())
     nro_reunion = (entry_nro_reunion.get().strip() if entry_nro_reunion and entry_nro_reunion.get().strip() else "1")
+    try: _guardar_prefs({"ultima_reunion": int(nro_reunion)})
+    except: pass
     fp = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=[("Excel Workbook", "*.xlsx")],
                                       initialdir=str(PROGRAMAS_DIR), initialfile=f"{fecha_txt}.xlsx")
     if not fp: return
@@ -779,6 +864,16 @@ def generar_programa_en_tabla():
         if not db_caballos.empty and nombre_upper not in db_caballos['Caballo'].values:
             lista_nombres_db = db_caballos['Caballo'].astype(str).tolist()
             sugerencias = difflib.get_close_matches(nombre_upper, lista_nombres_db, n=1, cutoff=0.7)
+            if not sugerencias:
+                # Segunda pasada: normalizar Y↔I (confusión frecuente)
+                _yi = lambda s: s.replace('Y', 'I')
+                nombre_norm = _yi(nombre_upper)
+                mapa_norm = {_yi(n): n for n in lista_nombres_db}
+                if nombre_norm in mapa_norm:
+                    sugerencias = [mapa_norm[nombre_norm]]
+                else:
+                    sug_norm = difflib.get_close_matches(nombre_norm, list(mapa_norm.keys()), n=1, cutoff=0.85)
+                    if sug_norm: sugerencias = [mapa_norm[sug_norm[0]]]
             if sugerencias:
                 sugerencia = sugerencias[0]
                 resp = messagebox.askyesno("Posible error de tipeo", f"No se encontró a '{nombre_upper}' en la base de datos.\n\n¿Quisiste decir '{sugerencia}'?")
@@ -844,22 +939,83 @@ def generar_programa_en_tabla():
             bloque = "   ||   ".join(todas_las_lineas)
             
         text_actuaciones.insert(tk.END, f"{nro}  {bloque}\n")
+    _generar_detalle_apuestas()
 
 def obtener_datos_formulario():
     rows = [tabla_programa.item(i)['values'] for i in tabla_programa.get_children()]
     return {"cabecera": {"nro_carrera": entry_nro_carrera.get(), "premio": entry_premio.get(), "horario": entry_horario.get(), "distancia": entry_distancia.get(), "condicion": entry_condicion.get(), "premios_dinero": entry_premios_dinero.get(), "apuesta": entry_apuesta.get(), "incremento": entry_incremento.get(), "incremento_2": entry_incremento_2.get()}, "tabla_caballos": rows, "actuaciones": text_actuaciones.get("1.0", tk.END).strip()}
 
+def _actualizar_combo_apuesta():
+    if entry_apuesta is None: return
+    sesion   = [c['cabecera']['apuesta'] for c in programa_completo if c['cabecera'].get('apuesta','').strip()]
+    historico = _leer_prefs().get('apuestas_usadas', [])
+    vistos = set(); sugerencias = []
+    for a in sesion + historico:
+        if a and a not in vistos: sugerencias.append(a); vistos.add(a)
+    entry_apuesta['values'] = sugerencias
+
+def _generar_detalle_apuestas(event=None):
+    if entry_apuesta is None or entry_incremento_2 is None: return
+    apuesta = entry_apuesta.get().strip()
+    n_caballos = len(tabla_programa.get_children()) if tabla_programa else 0
+    exacta   = "IMPERFECTA $ 200"  if n_caballos > 13 else "EXACTA $ 200"
+    trifecta = "CUATRIFECTA $ 200" if n_caballos > 13 else "TRIFECTA $ 200"
+    apuesta_corta = re.sub(r'^APUESTA\s+', '', apuesta, flags=re.I).strip()
+    apuesta_es_doble = bool(re.search(r'DOBLE', apuesta_corta, re.I))
+
+    # Detectar última carrera: si ya hay una DOBLE FINAL guardada y el nro actual es mayor
+    es_ultima = False
+    try:
+        nro_actual = int(entry_nro_carrera.get().strip())
+        nros_doble_final = [int(c['cabecera']['nro_carrera']) for c in programa_completo
+                            if 'DOBLE FINAL' in c['cabecera'].get('apuesta','').upper()
+                            and str(c['cabecera']['nro_carrera']).isdigit()]
+        if nros_doble_final and nro_actual > max(nros_doble_final):
+            es_ultima = True
+    except: pass
+
+    partes = ["AP. A GANADOR $ 1 ($ 500 MINIMO)", exacta, trifecta]
+    if not apuesta_es_doble and not es_ultima:
+        partes.append("DOBLE $ 200")
+    if apuesta_corta: partes.append(apuesta_corta)
+    entry_incremento_2.delete(0, tk.END)
+    entry_incremento_2.insert(0, ", ".join(partes))
+
+def _on_apuesta_changed(event=None):
+    if entry_apuesta is None or entry_incremento is None: return
+    apuesta = entry_apuesta.get().strip()
+    if not apuesta: return
+    valor = _leer_prefs().get('incrementos', {}).get(apuesta, '')
+    if valor:
+        entry_incremento.delete(0, tk.END)
+        entry_incremento.insert(0, valor)
+    _generar_detalle_apuestas()
+
 def limpiar_formulario():
-    for e in [entry_nro_carrera, entry_premio, entry_horario, entry_distancia, entry_condicion, entry_premios_dinero, entry_apuesta, entry_incremento, entry_incremento_2]: e.delete(0, tk.END)
+    for e in [entry_nro_carrera, entry_premio, entry_horario, entry_distancia, entry_condicion, entry_premios_dinero, entry_incremento, entry_incremento_2]: e.delete(0, tk.END)
+    if entry_apuesta is not None: entry_apuesta.set('')
     text_caballos.delete("1.0", tk.END); text_kilos.delete("1.0", tk.END); text_actuaciones.delete("1.0", tk.END)
     for i in tabla_programa.get_children(): tabla_programa.delete(i)
     global indice_edicion; indice_edicion = None; btn_accion.config(text="Añadir Carrera")
+    _actualizar_combo_apuesta()
+    if not programa_completo:
+        hist = _leer_prefs().get('apuestas_usadas', [])
+        entry_apuesta.set(hist[0] if hist else "APUESTA CUATERNA $ 300")
 
 def guardar_o_anadir_carrera():
     if not tabla_programa.get_children(): return
     data = obtener_datos_formulario(); global indice_edicion
     if indice_edicion is not None: programa_completo[indice_edicion] = data; messagebox.showinfo("OK", "Carrera Actualizada")
     else: programa_completo.append(data); messagebox.showinfo("OK", "Carrera Añadida")
+    apuesta_usada = data['cabecera'].get('apuesta', '').strip()
+    incremento_usado = data['cabecera'].get('incremento', '').strip()
+    if apuesta_usada:
+        hist = _leer_prefs().get('apuestas_usadas', [])
+        if apuesta_usada not in hist: hist.insert(0, apuesta_usada); _guardar_prefs({'apuestas_usadas': hist[:20]})
+    if apuesta_usada and incremento_usado:
+        incs = _leer_prefs().get('incrementos', {})
+        incs[apuesta_usada] = incremento_usado
+        _guardar_prefs({'incrementos': incs})
     _refrescar_lista_carreras(); limpiar_formulario()
 
 def cargar_carrera_para_editar():
@@ -953,6 +1109,8 @@ def accion_importar_programa():
 
     global db_caballos, db_actuaciones
     db_caballos, db_actuaciones = conectar_y_cargar_datos()
+    _guardar_en_registro("programas", fecha, Path(fp).name)
+    _actualizar_estado_db()
     messagebox.showinfo("Programa cargado", f"Fecha: {fecha}\nCaballos procesados: {cargados}")
 
 def accion_importar_resultados():
@@ -1010,6 +1168,8 @@ def accion_importar_resultados():
 
     global db_caballos, db_actuaciones
     db_caballos, db_actuaciones = conectar_y_cargar_datos()
+    _guardar_en_registro("resultados", fecha, Path(fp).name)
+    _actualizar_estado_db()
     messagebox.showinfo("Resultados cargados", f"Fecha: {fecha}\nActuaciones cargadas: {tot}")
 
 # =============================================================================
@@ -1086,6 +1246,9 @@ foot = ttk.Frame(root, style="Card.TFrame", padding=(15, 10)); foot.pack(side=tk
 contador_carreras = tk.StringVar(value="Carreras: 0")
 ttk.Label(foot, textvariable=contador_carreras, style="Card.TLabel", font=("Segoe UI", 10, "bold"),
           foreground=COLORS["primary"]).pack(side=tk.LEFT)
+estado_db_var = tk.StringVar(value=_leer_estado_db())
+ttk.Label(foot, textvariable=estado_db_var, style="Card.TLabel",
+          font=("Segoe UI", 8), foreground="#6b7280").pack(side=tk.LEFT, padx=25)
 ttk.Button(foot, text="Exportar Excel", command=exportar_programa_excel, style="Green.TButton").pack(side=tk.RIGHT, padx=(5, 0))
 
 main_scroll = ScrollableFrame(root); main_scroll.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -1096,11 +1259,12 @@ f1 = ttk.LabelFrame(form_container, text="Información de Carrera", padding=15);
 
 ttk.Label(f1, text="Fecha Reunión (PDF):", style="Field.TLabel", foreground="red").grid(row=0, column=0, sticky="w", pady=5)
 entry_fecha = ttk.Entry(f1); entry_fecha.grid(row=0, column=1, columnspan=3, sticky="we", pady=5)
-entry_fecha.insert(0, date.today().strftime("%d DE %B DE %Y").upper())
+entry_fecha.insert(0, "")  # Se completa automáticamente al cargar el Word
 
 # --- NUEVO CAMPO REUNION ---
 ttk.Label(f1, text="Nº Reunión (PDF):", style="Field.TLabel", foreground="blue").grid(row=1, column=0, sticky="w", pady=5)
-entry_nro_reunion = ttk.Entry(f1, width=10); entry_nro_reunion.grid(row=1, column=1, sticky="w", pady=5); entry_nro_reunion.insert(0, "22") 
+entry_nro_reunion = ttk.Entry(f1, width=10); entry_nro_reunion.grid(row=1, column=1, sticky="w", pady=5)
+_nro_ini = _leer_prefs().get("ultima_reunion", ""); entry_nro_reunion.insert(0, str(_nro_ini) if _nro_ini else "") 
 
 ttk.Label(f1, text="Selección Word:", style="Field.TLabel").grid(row=2, column=0, sticky="w", pady=5)
 combo_word = ttk.Combobox(f1, width=35, state="readonly"); combo_word.grid(row=2, column=1, columnspan=3, sticky="we", pady=5); combo_word.bind("<<ComboboxSelected>>", aplicar_seleccion_word)
@@ -1118,7 +1282,14 @@ ttk.Label(f1, text="Condición (Usar | para salto):", style="Field.TLabel").grid
 ttk.Label(f1, text="Premios ($):", style="Field.TLabel").grid(row=7, column=0, sticky="w", pady=5); entry_premios_dinero = ttk.Entry(f1); entry_premios_dinero.grid(row=7, column=1, columnspan=3, sticky="we", pady=5)
 
 f2 = ttk.LabelFrame(form_container, text="Apuestas y Caballos", padding=15); f2.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10)
-ttk.Label(f2, text="Apuesta (Título):", style="Field.TLabel").grid(row=0, column=0, sticky="w", pady=5); entry_apuesta = ttk.Entry(f2); entry_apuesta.grid(row=0, column=1, sticky="we", pady=5, padx=5)
+ttk.Label(f2, text="Apuesta (Título):", style="Field.TLabel").grid(row=0, column=0, sticky="w", pady=5)
+entry_apuesta = ttk.Combobox(f2); entry_apuesta.grid(row=0, column=1, sticky="we", pady=5, padx=5)
+entry_apuesta.bind('<<ComboboxSelected>>', _on_apuesta_changed)
+entry_apuesta.bind('<Return>', _on_apuesta_changed)
+_actualizar_combo_apuesta()
+if not programa_completo:
+    _hist0 = _leer_prefs().get('apuestas_usadas', [])
+    entry_apuesta.set(_hist0[0] if _hist0 else "APUESTA CUATERNA $ 300")
 ttk.Label(f2, text="Incremento ($):", style="Field.TLabel").grid(row=1, column=0, sticky="w", pady=5); entry_incremento = ttk.Entry(f2, width=15); entry_incremento.grid(row=1, column=1, sticky="w", pady=5, padx=5)
 ttk.Label(f2, text="Detalle Apuestas:", style="Field.TLabel").grid(row=2, column=0, sticky="w", pady=5); entry_incremento_2 = ttk.Entry(f2, width=15); entry_incremento_2.grid(row=2, column=1, sticky="w", pady=5, padx=5)
 ttk.Label(f2, text="Pegar Lista Caballos:").grid(row=3, column=0, sticky="nw", pady=5)

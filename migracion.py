@@ -480,6 +480,21 @@ if __name__ == "__main__":
     }
     # >>> FIN EDITABLE <<<
 
+    # Incorporar cargas realizadas desde la interfaz
+    _registro = DATA_DIR / 'cargas_registro.json'
+    if _registro.exists():
+        import json as _json
+        try:
+            _reg = _json.loads(_registro.read_text(encoding='utf-8'))
+            _nuevos_p = {k: v for k, v in _reg.get('programas', {}).items() if k not in LISTA_PROGRAMAS}
+            _nuevos_r = {k: v for k, v in _reg.get('resultados', {}).items() if k not in LISTA_RESULTADOS}
+            if _nuevos_p: print(f"[registro] Incorporando {len(_nuevos_p)} programa(s) cargados desde interfaz: {list(_nuevos_p.keys())}")
+            if _nuevos_r: print(f"[registro] Incorporando {len(_nuevos_r)} resultado(s) cargados desde interfaz: {list(_nuevos_r.keys())}")
+            LISTA_PROGRAMAS.update(_nuevos_p)
+            LISTA_RESULTADOS.update(_nuevos_r)
+        except Exception as _e:
+            print(f"[registro] Aviso: no se pudo leer cargas_registro.json: {_e}")
+
     crear_base_de_datos()
     conn = sqlite3.connect(NOMBRE_BD)
 
