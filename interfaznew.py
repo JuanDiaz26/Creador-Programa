@@ -85,7 +85,18 @@ def formatear_cuerpos(valor):
     s = str(valor).strip()
     if any(x in s.upper() for x in ['CZA', 'PZO', 'HCO', 'S.A']): return s
     try:
-        f = float(s); entero = int(f); dec = f - entero; frac = ""
+        # Soporta "2 1/2", "3/4", "1/2" además de decimales como "2.5"
+        if '/' in s:
+            parts = s.split()
+            if len(parts) == 2:
+                num, den = parts[1].split('/')
+                f = int(parts[0]) + int(num) / int(den)
+            else:
+                num, den = s.split('/')
+                f = int(num) / int(den)
+        else:
+            f = float(s)
+        entero = int(f); dec = f - entero; frac = ""
         if abs(dec - 0.25) < 0.01: frac = "1/4"
         elif abs(dec - 0.50) < 0.01: frac = "1/2"
         elif abs(dec - 0.75) < 0.01: frac = "3/4"
@@ -213,21 +224,51 @@ def obtener_datos_caballo(nombre, db_cab, db_act):
     ext_str = str(info.get('ultima_actuacion_externa', '')).strip()
     ult_brutas = [x.strip() for x in ext_str.split('-') if x.strip()] if ext_str and ext_str.lower() != 'nan' else []
     
-    # Separamos: externas (con letras como P, LP) y locales viejas (solo números, antes del período de BD)
-    ult_externas = []
-    ult_old_local = []
-    for act in ult_brutas:
-        if any(c.isalpha() and c.lower() != 'e' for c in act):
-            ult_externas.append(act)
-        else:
-            ult_old_local.append(act)
+    # --- 3. Combinar manteniendo orden cronológico ---
+    def _es_ext(a):
+        return any(c.isalpha() and c.lower() != 'e' for c in a)
 
-    # Si el último resultado viejo coincide con el primero de la BD, es duplicado → lo sacamos
-    if ult_old_local and ult_locales and ult_old_local[-1] == ult_locales[0]:
-        ult_old_local = ult_old_local[:-1]
+    hay_externos = any(_es_ext(a) for a in ult_brutas)
 
-    # --- 3. Combinar: externas + locales viejas (pre-BD) + locales BD ---
-    combined_full = ult_externas + ult_old_local + ult_locales
+    if not hay_externos:
+        # Sin externos: matching hacia adelante para de-duplar pre-BD
+        db_ptr = 0
+        combined_full = []
+        for act in ult_brutas:
+            if db_ptr < len(ult_locales) and ult_locales[db_ptr] == act:
+                combined_full.append(ult_locales[db_ptr]); db_ptr += 1
+            else:
+                combined_full.append(act)
+        combined_full.extend(ult_locales[db_ptr:])
+    else:
+        # Con externos: matching desde la DERECHA de ult_locales para encontrar
+        # el punto correcto de inserción y preservar el orden cronológico.
+        # Los locales de ult_brutas pueden ser recientes (en DB) o pre-BD.
+        locals_idx = [(i, a) for i, a in enumerate(ult_brutas) if not _es_ext(a)]
+        match_pos = {}  # índice en ult_brutas → índice en ult_locales (o None)
+        search_end = len(ult_locales)
+        for bi, bact in reversed(locals_idx):
+            found = -1
+            for k in range(search_end - 1, -1, -1):
+                if ult_locales[k] == bact:
+                    found = k; break
+            match_pos[bi] = found if found >= 0 else None
+            if found >= 0:
+                search_end = found
+
+        combined_full = []
+        db_ptr = 0
+        for i, act in enumerate(ult_brutas):
+            if _es_ext(act):
+                combined_full.append(act)
+            else:
+                mp = match_pos.get(i)
+                if mp is not None and mp >= db_ptr:
+                    combined_full.extend(ult_locales[db_ptr:mp + 1])
+                    db_ptr = mp + 1
+                else:
+                    combined_full.append(act)  # pre-BD real
+        combined_full.extend(ult_locales[db_ptr:])
     
     # --- 4. Aplicar lógica de prolijidad (Máximo 3 o 4) ---
     # Tomamos las últimas 4 por defecto
@@ -247,8 +288,15 @@ def obtener_datos_caballo(nombre, db_cab, db_act):
     edad = info.get('Edad', '')
     info['E Kg'] = f"{edad} {info.get('Peso','')}".strip()
     info['4 Ult.'] = cuatro
-    info['actuaciones'] = acts.tail(2) # Mostramos las 2 más recientes locales abajo
+    info['actuaciones'] = acts.tail(2)
     info['texto_act_ext'] = str(info.get('texto_actuaciones_externas', '')).strip()
+    # Fechas de todas las actuaciones en DB (para deduplicar con externas)
+    try:
+        info['todas_act_fechas'] = set(
+            acts['Fecha'].dropna().apply(lambda x: x.strftime('%d/%m/%y'))
+        )
+    except Exception:
+        info['todas_act_fechas'] = set()
     
     return info
 
@@ -920,16 +968,28 @@ def generar_programa_en_tabla():
 
         # --- 2. Traemos los textos Externos ---
         texto_ext = datos.get('texto_act_ext', '')
-        lineas_ext = [l.strip() for l in texto_ext.split('\n') if l.strip() and l.strip().lower() != 'nan']
-        
-        # OJO ACÁ: Ya no usamos reverse() en las de afuera, ni al final.
-        # Simplemente sumamos la lista de afuera con la de Tucumán.
-        # Como Tucumán ya viene ordenada cronológicamente (vieja a nueva) desde obtener_datos_caballo,
-        # al sumar [viejas_afuera] + [locales_Tucuman], quedan en el orden perfecto.
-        
-        todas_las_lineas = lineas_ext + lineas_locales
-        
-        # Nos quedamos con las 2 más recientes (que ahora están al final de la lista)
+        lineas_ext_raw = [l.strip() for l in texto_ext.split('\n') if l.strip() and l.strip().lower() != 'nan']
+
+        # Filtramos líneas externas que sean duplicado de una actuación local en DB
+        # (misma fecha DD/MM/YY → es la misma carrera local, ya está en lineas_locales)
+        db_fechas = datos.get('todas_act_fechas', set())
+        _dp = re.compile(r'^(\d{2}/\d{2}/\d{2})')
+        lineas_ext = []
+        for ln in lineas_ext_raw:
+            m = _dp.match(ln)
+            if m and m.group(1) in db_fechas:
+                continue  # duplicado local, ignorar
+            lineas_ext.append(ln)
+
+        # Merge cronológico: ordenamos por fecha extraída del texto
+        def _fecha_linea(ln):
+            m = _dp.match(ln)
+            if m:
+                try: return datetime.strptime(m.group(1), '%d/%m/%y')
+                except: pass
+            return datetime.min
+
+        todas_las_lineas = sorted(lineas_ext + lineas_locales, key=_fecha_linea)
         todas_las_lineas = todas_las_lineas[-2:] if todas_las_lineas else []
         
         if not todas_las_lineas:
