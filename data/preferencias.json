@@ -1,5 +1,7 @@
 {
   "apuestas_usadas": [
+    "APUESTA TRIFECTA $ 200",
+    "Cuaterna $ 500 - Inc. $ 1.000.000",
     "Triplo $ 300 - Inc. $ 300.000",
     "APUESTA CUATERNA $ 300",
     "APUESTA CUATERNA $ 500",
@@ -10,12 +12,14 @@
   ],
   "incrementos": {
     "APUESTA CUATERNA $ 300": "INCREMENTO: $ 500.000",
-    "APUESTA TRIPLO $ 300": "INCREMENTO: $ 200.000",
+    "APUESTA TRIPLO $ 300": "INCREMENTO: $ 300.000",
     "APUESTA CADENA $ 500": "INCREMENTO: $ 1.500.000",
-    "APUESTA QUINTUPLO $ 500": "INCREMENTO: $ 1.000.000",
+    "APUESTA QUINTUPLO $ 500": "INCREMENTO: $ 1.000.00",
     "APUESTA CUATERNA $ 500": "INCREMENTO: $ 1.000.000",
     "Triplo $ 300 - Inc. $ 300.000": "Cuatrifecta $ 200 - Inc. $ 500.000",
-    "APUESTA DOBLE FINAL $ 300": "INCREMENTO: $ 200.000"
+    "APUESTA DOBLE FINAL $ 300": "INCREMENTO: $ 200.000",
+    "Cuaterna $ 500 - Inc. $ 1.000.000": "Cuatrifecta $ 200 - Inc. $ 500.000",
+    "APUESTA TRIFECTA $ 200": "INCREMENTO: $ 200.000"
   },
-  "ultima_reunion": 10
+  "ultima_reunion": 11
 }
